@@ -6,55 +6,309 @@
 <meta name="theme-color" content="#6c63ff">
 <link rel="manifest" href="manifest.webmanifest">
 <title>プロセカ ガチャ禁管理</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f5f6fb;color:#202124;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
-header{background:linear-gradient(135deg,#6c63ff,#8d7cff);color:#fff;padding:22px 16px}
-header h1{margin:0;font-size:24px}
-header p{margin:6px 0 0;opacity:.9;font-size:13px}
-.wrap{max-width:980px;margin:auto;padding:14px}
-.card{background:#fff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 3px 14px #0000000d}
-.card h2{font-size:18px;margin:0 0 12px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.field label{display:block;font-size:12px;font-weight:700;margin:0 0 5px;color:#666}
-.field input,.field select{width:100%;padding:10px;border:1px solid #d9d9e3;border-radius:10px;background:#fff;font:inherit}
-.btn{border:0;border-radius:10px;padding:10px 14px;background:#6c63ff;color:#fff;font-weight:700;cursor:pointer}
-.btn.sub{background:#eeeef5;color:#333}
-.btn.danger{background:#ffe8ec;color:#b4233c}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.target{border:1px solid #e2e2eb;border-radius:14px;padding:14px;margin:10px 0}
-.targetHead{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.targetHead strong{font-size:16px}
-.summaryBox{border:1px solid #e3e2f4;background:#faf9ff;border-radius:14px;padding:14px;margin:10px 0}
-.summaryTitle{font-weight:800;margin-bottom:10px}
-.summaryGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.summaryGrid>div{background:#fff;border-radius:10px;padding:9px}
-.summaryGrid span{display:block;font-size:11px;color:#777}
-.summaryGrid b{display:block;margin-top:3px;font-size:15px}
-.progress{height:9px;background:#e9e9f1;border-radius:99px;overflow:hidden;margin-top:10px}
-.bar{height:100%;background:#6c63ff}
-.photoGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
-.photoItem{position:relative;border-radius:10px;overflow:hidden;background:#f0f0f5;min-height:90px;display:flex;align-items:center;justify-content:center}
-.photoItem img{display:block;width:100%;max-height:240px;object-fit:contain}
-.photoItem button{position:absolute;right:5px;top:5px;border:0;border-radius:50%;width:28px;height:28px;background:#000b;color:#fff;cursor:pointer}
-.planMain{background:#f0efff;border-radius:12px;padding:14px;margin:10px 0;font-weight:700}
-.planGood{background:#eaf8ef;color:#176b37;border-radius:10px;padding:10px;margin:8px 0}
-.planAlert{background:#fff1f2;color:#a52238;border-radius:10px;padding:10px;margin:8px 0}
-.note{font-size:12px;color:#666;font-weight:400}
-.tableWrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:9px;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
-th{color:#666;font-size:12px}
-canvas{width:100%;height:280px;border:1px solid #eee;border-radius:12px;background:#fff}
-.muted{color:#777;font-size:13px}
-.hidden{display:none!important}
-.dangerText{color:#b4233c}
-.okText{color:#176b37}
+
+body{
+ margin:0;
+ background:#f5f6fb;
+ color:#202124;
+ font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif
+}
+
+header{
+ background:linear-gradient(135deg,#6c63ff,#8d7cff);
+ color:#fff;
+ padding:22px 16px
+}
+
+header h1{
+ margin:0;
+ font-size:24px
+}
+
+header p{
+ margin:6px 0 0;
+ opacity:.9;
+ font-size:13px
+}
+
+.wrap{
+ max-width:980px;
+ margin:auto;
+ padding:14px
+}
+
+.card{
+ background:#fff;
+ border-radius:16px;
+ padding:16px;
+ margin:12px 0;
+ box-shadow:0 3px 14px #0000000d
+}
+
+.card h2{
+ font-size:18px;
+ margin:0 0 12px
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:10px
+}
+
+.field label{
+ display:block;
+ font-size:12px;
+ font-weight:700;
+ margin:0 0 5px;
+ color:#666
+}
+
+.field input,
+.field select{
+ width:100%;
+ padding:10px;
+ border:1px solid #d9d9e3;
+ border-radius:10px;
+ background:#fff;
+ font:inherit
+}
+
+.btn{
+ border:0;
+ border-radius:10px;
+ padding:10px 14px;
+ background:#6c63ff;
+ color:#fff;
+ font-weight:700;
+ cursor:pointer
+}
+
+.btn.sub{
+ background:#eeeef5;
+ color:#333
+}
+
+.btn.danger{
+ background:#ffe8ec;
+ color:#b4233c
+}
+
+.actions{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap;
+ margin-top:10px
+}
+
+.target{
+ border:1px solid #e2e2eb;
+ border-radius:14px;
+ padding:14px;
+ margin:10px 0
+}
+
+.targetHead{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:8px
+}
+
+.targetHead strong{
+ font-size:16px
+}
+
+.summaryBox{
+ border:1px solid #e3e2f4;
+ background:#faf9ff;
+ border-radius:14px;
+ padding:14px;
+ margin:10px 0
+}
+
+.summaryTitle{
+ font-weight:800;
+ margin-bottom:10px
+}
+
+.summaryGrid{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:8px
+}
+
+.summaryGrid>div{
+ background:#fff;
+ border-radius:10px;
+ padding:9px
+}
+
+.summaryGrid span{
+ display:block;
+ font-size:11px;
+ color:#777
+}
+
+.summaryGrid b{
+ display:block;
+ margin-top:3px;
+ font-size:15px
+}
+
+.progress{
+ height:9px;
+ background:#e9e9f1;
+ border-radius:99px;
+ overflow:hidden;
+ margin-top:10px
+}
+
+.bar{
+ height:100%;
+ background:#6c63ff
+}
+
+.photoGrid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+ gap:8px;
+ margin-top:10px
+}
+
+.photoItem{
+ position:relative;
+ border-radius:10px;
+ overflow:hidden;
+ background:#f0f0f5;
+ min-height:90px;
+ display:flex;
+ align-items:center;
+ justify-content:center
+}
+
+.photoItem img{
+ display:block;
+ width:100%;
+ max-height:240px;
+ object-fit:contain
+}
+
+.photoItem button{
+ position:absolute;
+ right:5px;
+ top:5px;
+ border:0;
+ border-radius:50%;
+ width:28px;
+ height:28px;
+ background:#000b;
+ color:#fff;
+ cursor:pointer
+}
+
+.planMain{
+ background:#f0efff;
+ border-radius:12px;
+ padding:14px;
+ margin:10px 0;
+ font-weight:700
+}
+
+.planGood{
+ background:#eaf8ef;
+ color:#176b37;
+ border-radius:10px;
+ padding:10px;
+ margin:8px 0
+}
+
+.planAlert{
+ background:#fff1f2;
+ color:#a52238;
+ border-radius:10px;
+ padding:10px;
+ margin:8px 0
+}
+
+.note{
+ font-size:12px;
+ color:#666;
+ font-weight:400
+}
+
+.totalBox{
+ background:#6c63ff;
+ color:#fff;
+ border-radius:14px;
+ padding:16px;
+ margin:10px 0
+}
+
+.totalBox .big{
+ font-size:25px;
+ font-weight:900;
+ margin-top:5px
+}
+
+.tableWrap{
+ overflow-x:auto
+}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ font-size:13px
+}
+
+th,td{
+ padding:9px;
+ border-bottom:1px solid #eee;
+ text-align:left;
+ white-space:nowrap
+}
+
+th{
+ color:#666;
+ font-size:12px
+}
+
+canvas{
+ width:100%;
+ height:280px;
+ border:1px solid #eee;
+ border-radius:12px;
+ background:#fff
+}
+
+.muted{
+ color:#777;
+ font-size:13px
+}
+
+.hidden{
+ display:none!important
+}
+
 @media(max-width:650px){
- .grid,.summaryGrid{grid-template-columns:1fr}
- .wrap{padding:10px}
- .card{padding:13px}
- header h1{font-size:21px}
+ .grid,.summaryGrid{
+  grid-template-columns:1fr
+ }
+
+ .wrap{
+  padding:10px
+ }
+
+ .card{
+  padding:13px
+ }
+
+ header h1{
+  font-size:21px
+ }
 }
 </style>
 </head>
@@ -76,7 +330,9 @@ canvas{width:100%;height:280px;border:1px solid #eee;border-radius:12px;backgrou
 <button class="btn" id="addTarget">＋ 欲しいカードを追加</button>
 </section>
 
+
 <section class="card">
+
 <h2>② 今日のクリスタル</h2>
 
 <div class="grid">
@@ -112,28 +368,40 @@ canvas{width:100%;height:280px;border:1px solid #eee;border-radius:12px;backgrou
 <div class="grid">
 
 <div class="field">
+
 <label>計算方法</label>
 
 <select id="planMode">
 
 <option value="zero">
-カード取得時に残り0にする（先行消費考慮）
+カードごとに天井分を確保する
 </option>
 
 <option value="minimum">
-1日あたり必要量を最小にする（余剰を次に繰り越し）
+1日あたり必要量を最小にする
 </option>
 
 <option value="constant">
-全ての日で同じ獲得量にして間に合わせる
+全期間で毎日同じ量にする
 </option>
 
 </select>
+
 </div>
 
+
 <div class="field">
+
 <label>最高1日クリスタル獲得量（任意）</label>
-<input id="maxDaily" type="number" min="0" step="1" placeholder="例：1000">
+
+<input
+id="maxDaily"
+type="number"
+min="0"
+step="1"
+placeholder="例：1000"
+>
+
 </div>
 
 </div>
@@ -156,7 +424,11 @@ canvas{width:100%;height:280px;border:1px solid #eee;border-radius:12px;backgrou
 
 <h2>⑤ クリスタル推移</h2>
 
-<canvas id="chart" width="900" height="280"></canvas>
+<canvas
+id="chart"
+width="900"
+height="280">
+</canvas>
 
 </section>
 
@@ -170,12 +442,14 @@ canvas{width:100%;height:280px;border:1px solid #eee;border-radius:12px;backgrou
 <table>
 
 <thead>
+
 <tr>
 <th>日付</th>
 <th>所持数</th>
 <th>前回から</th>
 <th>操作</th>
 </tr>
+
 </thead>
 
 <tbody id="records"></tbody>
@@ -186,15 +460,24 @@ canvas{width:100%;height:280px;border:1px solid #eee;border-radius:12px;backgrou
 
 <div class="actions">
 
-<button class="btn sub" id="exportCsv">
+<button
+class="btn sub"
+id="exportCsv">
 CSVを書き出す
 </button>
 
-<label class="btn sub" for="importCsv">
+<label
+class="btn sub"
+for="importCsv">
 CSVを読み込む
 </label>
 
-<input id="importCsv" class="hidden" type="file" accept=".csv,text/csv">
+<input
+id="importCsv"
+class="hidden"
+type="file"
+accept=".csv,text/csv"
+>
 
 </div>
 
@@ -209,7 +492,9 @@ CSVを読み込む
 この端末に保存しているカード・写真・クリスタル記録をすべて消します。
 </p>
 
-<button class="btn danger" id="resetAll">
+<button
+class="btn danger"
+id="resetAll">
 すべてリセット
 </button>
 
@@ -223,13 +508,14 @@ CSVを読み込む
 'use strict';
 
 
-/* =========================
+/* =====================================================
    基本
-========================= */
+===================================================== */
 
 const $=id=>document.getElementById(id);
 
 const KEY='proseka_gachakin_v3';
+
 
 let data=
 JSON.parse(localStorage.getItem(KEY)||'null')
@@ -247,6 +533,7 @@ JSON.parse(localStorage.getItem(KEY)||'null')
  planMode:'zero',
  maxDaily:0
 };
+
 
 let editingIndex=null;
 
@@ -277,38 +564,40 @@ const todayStr=()=>{
  const d=new Date();
 
  return d.getFullYear()
-  +'-'
-  +String(d.getMonth()+1).padStart(2,'0')
-  +'-'
-  +String(d.getDate()).padStart(2,'0');
+ +'-'
+ +String(d.getMonth()+1).padStart(2,'0')
+ +'-'
+ +String(d.getDate()).padStart(2,'0');
 
 };
 
 
 const daysBetween=(a,b)=>
-(new Date(b+'T00:00:00')-
- new Date(a+'T00:00:00'))/86400000;
+(
+ new Date(b+'T00:00:00')-
+ new Date(a+'T00:00:00')
+)/86400000;
 
 
 const daysUntil=d=>
-d?daysBetween(todayStr(),d):null;
+ d?daysBetween(todayStr(),d):null;
 
 
 
-/* =========================
+/* =====================================================
    記録
-========================= */
+===================================================== */
 
 function sortedRecords(){
 
  return data.records
-  .filter(r=>
-   r &&
-   r.date &&
-   Number.isFinite(Number(r.crystals))
-  )
-  .slice()
-  .sort((a,b)=>a.date.localeCompare(b.date));
+ .filter(r=>
+  r &&
+  r.date &&
+  Number.isFinite(Number(r.crystals))
+ )
+ .slice()
+ .sort((a,b)=>a.date.localeCompare(b.date));
 
 }
 
@@ -328,7 +617,8 @@ function cumulativeDaily(){
 
  const r=sortedRecords();
 
- if(r.length<2)return null;
+ if(r.length<2)
+  return null;
 
  let totalGain=0;
  let totalDays=0;
@@ -360,21 +650,21 @@ function cumulativeDaily(){
 
 
 
-/* =========================
+/* =====================================================
    カード
-========================= */
+===================================================== */
 
 function sortedTargets(){
 
  return data.targets
-  .filter(t=>
-   t &&
-   t.date &&
-   Number.isFinite(Number(t.ceiling)) &&
-   Number(t.ceiling)>=0
-  )
-  .slice()
-  .sort((a,b)=>a.date.localeCompare(b.date));
+ .filter(t=>
+  t &&
+  t.date &&
+  Number.isFinite(Number(t.ceiling)) &&
+  Number(t.ceiling)>=0
+ )
+ .slice()
+ .sort((a,b)=>a.date.localeCompare(b.date));
 
 }
 
@@ -395,7 +685,9 @@ function renderTargets(){
 
 <div class="targetHead">
 
-<strong>🎯 欲しいカード ${i+1}</strong>
+<strong>
+🎯 欲しいカード ${i+1}
+</strong>
 
 <button
 class="btn danger"
@@ -472,8 +764,7 @@ onchange="addPhotos(${i},this.files)"
 
 <button
 class="btn sub"
-onclick="deleteAllPhotos(${i})"
->
+onclick="deleteAllPhotos(${i})">
 写真を全部削除
 </button>
 
@@ -482,8 +773,8 @@ onclick="deleteAllPhotos(${i})"
 
 <div
 class="photoGrid"
-id="photos-${i}"
-></div>
+id="photos-${i}">
+</div>
 
 `;
 
@@ -531,9 +822,9 @@ window.removeTarget=i=>{
 
 
 
-/* =========================
+/* =====================================================
    写真DB
-========================= */
+===================================================== */
 
 let dbPromise=null;
 
@@ -550,17 +841,16 @@ function openDB(){
 
  dbPromise=new Promise((res,rej)=>{
 
-  const q=
-   indexedDB.open(
-    'ProsekaGachaDB_v3',
-    1
-   );
+  const q=indexedDB.open(
+   'ProsekaGachaDB_v3',
+   1
+  );
 
   q.onupgradeneeded=()=>{
 
    if(
     !q.result.objectStoreNames
-     .contains('images')
+    .contains('images')
    ){
 
     q.result.createObjectStore(
@@ -608,12 +898,11 @@ async function addPhotos(i,files){
       'readwrite'
      );
 
-    tx.objectStore('images')
-     .add({
-      targetId:t.id,
-      blob:f,
-      name:f.name
-     });
+    tx.objectStore('images').add({
+     targetId:t.id,
+     blob:f,
+     name:f.name
+    });
 
     tx.oncomplete=res;
 
@@ -656,8 +945,7 @@ async function loadPhotos(i){
      );
 
     const q=
-     tx.objectStore('images')
-      .getAll();
+     tx.objectStore('images').getAll();
 
     q.onsuccess=()=>res(q.result);
 
@@ -713,8 +1001,7 @@ async function deletePhoto(id,i){
      'readwrite'
     );
 
-   tx.objectStore('images')
-    .delete(id);
+   tx.objectStore('images').delete(id);
 
    tx.oncomplete=res;
 
@@ -745,8 +1032,7 @@ async function deletePhotos(targetId){
      );
 
     const q=
-     tx.objectStore('images')
-      .getAll();
+     tx.objectStore('images').getAll();
 
     q.onsuccess=()=>res(q.result);
 
@@ -771,11 +1057,9 @@ async function deletePhotos(targetId){
 
 
 window.addPhotos=addPhotos;
-
 window.deletePhoto=deletePhoto;
 
-window.deleteAllPhotos=
-async i=>{
+window.deleteAllPhotos=async i=>{
 
  if(!confirm(
   'このカードの写真を全部削除しますか？'
@@ -792,72 +1076,161 @@ async i=>{
 
 
 
-/* =========================================================
-   カードごとの「先行消費」を考慮したシミュレーション
-========================================================= */
+/* =====================================================
+   ★★★ 新しい計算エンジン ★★★
+   
+   「カードを順番に取得する」
+   ことを前提にしている。
+   
+   現在の残高
+        ↓
+   カード①まで貯める
+        ↓
+   カード①を購入
+        ↓
+   残った分をカード②へ
+        ↓
+   カード②まで貯める
+        ↓
+   カード②を購入
+===================================================== */
 
-function calculatePlan(ratePerDay){
+
+/*
+  指定した1日獲得量でシミュレーションする。
+
+  重要なのは、
+
+  balance = 現在の残高
+
+  ↓
+
+  実装日までに rate × 日数 を加算
+
+  ↓
+
+  天井分を消費
+
+  ↓
+
+  残ったbalanceを次のカードへ
+
+  とすること。
+*/
+
+function simulate(rate){
 
  const list=sortedTargets();
 
- const initial=currentCrystals();
-
- let balance=initial;
+ let balance=currentCrystals();
 
  let previousDate=todayStr();
 
+ let totalEarned=0;
+
+ let totalSpent=0;
+
  const rows=[];
+
 
  for(const t of list){
 
   const ceiling=
-   Number(t.ceiling||0);
+   Math.max(
+    0,
+    Number(t.ceiling||0)
+   );
 
-  const d=
+
+  let d=
    daysBetween(
     previousDate,
     t.date
    );
 
-  const need=
-   Math.max(
-    0,
-    ceiling-balance
-   );
+
+  /*
+    実装済みカードについては
+    その日までの獲得を追加しない。
+  */
+
+  const validDays=Math.max(0,d);
+
 
   const earned=
-   Number.isFinite(ratePerDay)
-    ?Math.max(0,d)*ratePerDay
+   Number.isFinite(rate)
+    ?rate*validDays
     :0;
+
 
   const beforeGet=
    balance+earned;
 
-  const after=
+
+  /*
+    このカードを確実に取得するために
+    必要なクリスタル。
+
+    ここでは「カードを取る」
+    = 天井分を消費
+  */
+
+  const shortfall=
    Math.max(
     0,
-    beforeGet-ceiling
+    ceiling-beforeGet
    );
+
+
+  /*
+    rateが十分なら、
+    残ったクリスタルをそのまま次へ。
+  */
+
+  const after=
+   beforeGet>=ceiling
+    ?beforeGet-ceiling
+    :0;
+
 
   rows.push({
 
-   t,
+   t:t,
 
-   d,
+   days:d,
 
-   ceiling,
+   ceiling:ceiling,
 
-   balanceBefore:balance,
+   startBalance:balance,
 
-   need,
+   earned:earned,
 
-   earned,
+   beforeGet:beforeGet,
 
-   beforeGet,
+   shortfall:shortfall,
 
-   after
+   after:after
 
   });
+
+
+  totalEarned+=earned;
+
+  if(beforeGet>=ceiling){
+
+   totalSpent+=ceiling;
+
+  }else{
+
+   /*
+     足りなかった場合でも、
+     実際に持っている分を消費した扱い。
+   */
+
+   totalSpent+=beforeGet;
+
+  }
+
 
   balance=after;
 
@@ -865,15 +1238,163 @@ function calculatePlan(ratePerDay){
 
  }
 
- return rows;
+
+ return {
+
+  rows:rows,
+
+  finalBalance:balance,
+
+  totalEarned:totalEarned,
+
+  totalSpent:totalSpent
+
+ };
 
 }
 
 
 
-/* =========================
+/*
+  「カードを全部間に合わせるために必要な
+   毎日の一定獲得量」を求める。
+
+  単純にカードごとの必要量を割るのではなく、
+
+  1日量を仮定
+      ↓
+  カード①取得
+      ↓
+  残高を繰り越す
+      ↓
+  カード②取得
+      ↓
+  ...
+  
+  と最後までシミュレーションする。
+*/
+
+function findMinimumConstantRate(){
+
+ const list=sortedTargets();
+
+ if(!list.length)
+  return 0;
+
+
+ /*
+   実装日が今日以前で、
+   現在のクリスタルだけでは足りない場合は
+   1日量だけでは解決できない。
+ */
+
+ const first=list[0];
+
+ if(
+  daysBetween(
+   todayStr(),
+   first.date
+  )<=0 &&
+  currentCrystals()<Number(first.ceiling||0)
+ ){
+
+  return Infinity;
+
+ }
+
+
+ /*
+   上限を探す
+ */
+
+ let low=0;
+
+ let high=1;
+
+
+ while(
+  high<1000000 &&
+  !isSimulationPossible(
+   high
+  )
+ ){
+
+  high*=2;
+
+ }
+
+
+ if(high>=1000000 &&
+    !isSimulationPossible(high)){
+
+  return Infinity;
+
+ }
+
+
+ /*
+   1個/日単位で二分探索。
+
+   「全カードを期限までに取れるか」
+   を基準にする。
+ */
+
+ for(let i=0;i<40;i++){
+
+  const mid=
+   (low+high)/2;
+
+  if(
+   isSimulationPossible(mid)
+  ){
+
+   high=mid;
+
+  }else{
+
+   low=mid;
+
+  }
+
+ }
+
+
+ return Math.ceil(high);
+
+}
+
+
+function isSimulationPossible(rate){
+
+ const result=
+  simulate(rate);
+
+ return result.rows.every(
+  r=>r.beforeGet>=r.ceiling
+ );
+
+}
+
+
+
+/* =====================================================
+   カードごとの必要量
+===================================================== */
+
+function calculateSequential(rate){
+
+ const result=
+  simulate(rate);
+
+ return result.rows;
+
+}
+
+
+
+/* =====================================================
    現在の状況
-========================= */
+===================================================== */
 
 function renderSummary(){
 
@@ -881,11 +1402,12 @@ function renderSummary(){
 
  box.innerHTML='';
 
+ const list=sortedTargets();
+
  const cur=currentCrystals();
 
  const daily=cumulativeDaily();
 
- const list=sortedTargets();
 
  if(!list.length){
 
@@ -898,20 +1420,35 @@ function renderSummary(){
 
 
  /*
-  ここではカードごとに
-  「そのカードを取った後に残るクリスタル」
-  を次のカードへ繰り越して表示する。
+   「現在の残高からカードを順番に取得する」
+   という考え方で表示。
  */
 
  let balance=cur;
 
+ let previousDate=todayStr();
 
- list.forEach(t=>{
 
-  const d=daysUntil(t.date);
+ list.forEach((t,index)=>{
 
   const ceiling=
    Number(t.ceiling||0);
+
+  const d=
+   daysBetween(
+    previousDate,
+    t.date
+   );
+
+
+  /*
+    現在の状況では、
+    未来のカードについて
+    今の残高だけを使った場合の不足量を表示。
+
+    前カードを取得した後は、
+    その残高を次のカードに繰り越す。
+  */
 
   const need=
    Math.max(
@@ -919,10 +1456,19 @@ function renderSummary(){
     ceiling-balance
    );
 
+
   const dailyNeed=
-   d!==null && d>0
+   d>0
     ?Math.ceil(need/d)
     :(need>0?Infinity:0);
+
+
+  /*
+    「カードを取るために必要な量」
+    だけを貯めた場合の残高。
+
+    余った分は次へ繰り越す。
+  */
 
   const after=
    Math.max(
@@ -930,23 +1476,28 @@ function renderSummary(){
     balance+need-ceiling
    );
 
+
   const rate=
    ceiling>0
     ?Math.min(
-      100,
-      balance/ceiling*100
-     )
+     100,
+     balance/ceiling*100
+    )
     :100;
+
 
   const e=
    document.createElement('div');
 
   e.className='summaryBox';
 
+
   e.innerHTML=`
 
 <div class="summaryTitle">
+
 🎯 ${esc(t.name||'名前未設定')}
+
 </div>
 
 
@@ -955,7 +1506,7 @@ function renderSummary(){
 
 <div>
 <span>実装日</span>
-<b>${esc(t.date||'未設定')}</b>
+<b>${esc(t.date)}</b>
 </div>
 
 
@@ -964,11 +1515,9 @@ function renderSummary(){
 
 <b>
 ${
- d===null
-  ?'--'
-  :d<0
-   ?'実装済み'
-   :d+'日'
+ d<0
+  ?'実装済み'
+  :fmt(d)+'日'
 }
 </b>
 
@@ -977,19 +1526,31 @@ ${
 
 <div>
 <span>天井</span>
-<b>${fmt(ceiling)}個</b>
+
+<b>
+${fmt(ceiling)}個
+</b>
+
 </div>
 
 
 <div>
-<span>前のカードからの繰越</span>
-<b>${fmt(balance)}個</b>
+<span>現在の繰越残高</span>
+
+<b>
+${fmt(balance)}個
+</b>
+
 </div>
 
 
 <div>
-<span>このカードまでに必要</span>
-<b>${fmt(need)}個</b>
+<span>このカードに必要</span>
+
+<b>
+${fmt(need)}個
+</b>
+
 </div>
 
 
@@ -1008,8 +1569,12 @@ ${
 
 
 <div>
-<span>カード取得後の残高</span>
-<b>${fmt(after)}個</b>
+<span>取得後の繰越</span>
+
+<b>
+${fmt(after)}個
+</b>
+
 </div>
 
 
@@ -1020,9 +1585,9 @@ ${
 ${
  daily===null
   ?'--'
-  :(daily>=0?'+':'')
-   +fmt(Math.round(daily))
-   +'個/日'
+  :(daily>=0?'+':'')+
+   fmt(Math.round(daily))+
+   '個/日'
 }
 </b>
 
@@ -1045,7 +1610,14 @@ style="width:${rate}%">
 
   box.appendChild(e);
 
+
+  /*
+    次のカードへ残高を繰り越す
+  */
+
   balance=after;
+
+  previousDate=t.date;
 
  });
 
@@ -1053,27 +1625,23 @@ style="width:${rate}%">
 
 
 
-/* =========================================================
+/* =====================================================
    必要獲得量
-========================================================= */
+===================================================== */
 
 function renderPlan(){
 
  const box=$('plan');
 
- const mode=data.planMode;
+ const list=sortedTargets();
+
+ const mode=data.planMode||'zero';
 
  const max=
   Math.max(
    0,
    Number(data.maxDaily||0)
   );
-
- const initial=
-  currentCrystals();
-
- const list=
-  sortedTargets();
 
 
  if(!list.length){
@@ -1086,42 +1654,26 @@ function renderPlan(){
  }
 
 
-
  /* =====================================================
-    zero
-
-    各カードを取るたびに天井分を消費。
-
-    例：
-
-    現在 20,000
-
-    カード1 60,000
-    ↓
-    40,000貯める
-    ↓
-    60,000でカード1取得
-    ↓
-    0
-
-    カード2 120,000
-    ↓
-    120,000貯める
-    ↓
-    カード2取得
+    カードごとに必要量を出すモード
  ===================================================== */
 
  if(mode==='zero'){
 
-  let balance=initial;
+  let html='';
+
+  let balance=currentCrystals();
 
   let previousDate=todayStr();
 
-  let possible=true;
+  let totalNeed=0;
 
-  let html='';
+  let totalSpent=0;
 
-  for(const t of list){
+
+  for(let i=0;i<list.length;i++){
+
+   const t=list[i];
 
    const ceiling=
     Number(t.ceiling||0);
@@ -1132,40 +1684,39 @@ function renderPlan(){
      t.date
     );
 
+
+   /*
+     このカードを取る時点で
+     今持っている分を使う。
+   */
+
    const need=
     Math.max(
      0,
      ceiling-balance
     );
 
-   let rate;
 
-   if(d>0){
-
-    rate=
-     Math.ceil(
-      need/d
-     );
-
-   }else{
-
-    rate=
-     need>0
-      ?Infinity
-      :0;
-
-   }
+   const rate=
+    d>0
+     ?Math.ceil(need/d)
+     :(need>0?Infinity:0);
 
 
-   if(
-    max>0 &&
-    rate>max
-   ){
+   /*
+     最高獲得量チェック
+   */
 
-    possible=false;
+   const possible=
+    max<=0 ||
+    rate<=max;
 
-   }
 
+   /*
+     「必要量だけ貯める」
+     ので、取得直前は
+     基本的に天井と同額。
+   */
 
    const earned=
     Number.isFinite(rate)
@@ -1177,12 +1728,403 @@ function renderPlan(){
     balance+earned;
 
 
-   /*
-    ★ここが重要
+   const after=
+    Math.max(
+     0,
+     beforeGet-ceiling
+    );
 
-    カード取得時に天井分を消費。
-    残った分だけ次のカードへ。
+
+   totalNeed+=need;
+
+   totalSpent+=ceiling;
+
+
+   html+=`
+
+<div class="planMain">
+
+<b>
+🎯 ${esc(t.name||'名前未設定')}
+</b>
+
+<br><br>
+
+
+実装日：
+<b>
+${esc(t.date)}
+</b>
+
+<br>
+
+
+実装まで：
+<b>
+${
+ d<0
+  ?'実装済み'
+  :fmt(d)+'日'
+}
+</b>
+
+<br><br>
+
+
+前のカード取得後の残高：
+<b>
+${fmt(balance)}個
+</b>
+
+<br>
+
+
+このカードに必要：
+<b>
+${fmt(need)}個
+</b>
+
+<br>
+
+
+必要獲得量：
+<b>
+${
+ Number.isFinite(rate)
+  ?fmt(rate)+'個/日'
+  :'間に合いません'
+}
+</b>
+
+<br>
+
+
+カード取得直前：
+<b>
+${fmt(beforeGet)}個
+</b>
+
+<br>
+
+
+天井消費：
+<b>
+-${fmt(ceiling)}個
+</b>
+
+<br>
+
+
+<span class="note">
+
+取得後に次のカードへ繰り越す残高：
+
+<b>
+${fmt(after)}個
+</b>
+
+</span>
+
+</div>
+
+`;
+
+
+   balance=after;
+
+   previousDate=t.date;
+
+
+   if(
+    max>0 &&
+    rate>max
+   ){
+
+    html+=`
+
+<div class="planAlert">
+
+⚠️
+このカードは、
+設定した最高${fmt(max)}個/日では
+実装日までに必要量を貯められません。
+
+</div>
+
+`;
+
+   }
+
+  }
+
+
+  /*
+    ★合計表示
+  */
+
+  html=`
+
+<div class="totalBox">
+
+<div>
+この順番でカードを全部取るために、
+これから必要な獲得量
+</div>
+
+<div class="big">
+${fmt(totalNeed)} 個
+</div>
+
+<div class="note" style="color:#fff">
+
+カードごとの天井消費を順番に考慮しています。
+
+</div>
+
+</div>
+
+`
+  +html;
+
+
+  html+=`
+
+<div class="planGood">
+
+✅
+カード①を取得した後の残りを、
+カード②へ自動的に繰り越して計算しています。
+
+<br><br>
+
+つまり、
+
+「カード①の60,000個を貯める」
+→「60,000個使う」
+→「カード②の120,000個を貯める」
+
+という順番で計算しています。
+
+</div>
+
+`;
+
+
+  box.innerHTML=html;
+
+  return;
+
+ }
+
+
+
+ /* =====================================================
+    constant
+ ===================================================== */
+
+ if(mode==='constant'){
+
+  const rate=
+   findMinimumConstantRate();
+
+
+  const result=
+   Number.isFinite(rate)
+    ?simulate(rate)
+    :null;
+
+
+  let html='';
+
+
+  html+=`
+
+<div class="totalBox">
+
+<div>
+全カードを実装日までに取るための
+毎日一定の獲得量
+</div>
+
+<div class="big">
+
+${
+ Number.isFinite(rate)
+  ?fmt(rate)+' 個/日'
+  :'計算できません'
+}
+
+</div>
+
+</div>
+
+`;
+
+
+  if(max>0&&
+     Number.isFinite(rate)&&
+     rate>max){
+
+   html+=`
+
+<div class="planAlert">
+
+⚠️
+必要な${fmt(rate)}個/日は、
+設定した最高${fmt(max)}個/日を超えています。
+
+</div>
+
+`;
+
+  }
+
+
+  if(result){
+
+   result.rows.forEach((r,i)=>{
+
+    html+=`
+
+<div class="planMain">
+
+<b>
+🎯 ${esc(r.t.name||'名前未設定')}
+</b>
+
+<br><br>
+
+実装日：
+<b>${esc(r.t.date)}</b>
+
+<br>
+
+実装まで：
+<b>
+${r.days<0?'実装済み':fmt(r.days)+'日'}
+</b>
+
+<br><br>
+
+カード取得前の残高：
+<b>
+${fmt(r.startBalance)}個
+</b>
+
+<br>
+
+この期間の獲得：
+<b>
++${fmt(r.earned)}個
+</b>
+
+<br>
+
+カード取得直前：
+<b>
+${fmt(r.beforeGet)}個
+</b>
+
+<br>
+
+天井消費：
+<b>
+-${fmt(r.ceiling)}個
+</b>
+
+<br>
+
+取得後の残高：
+<b>
+${fmt(r.after)}個
+</b>
+
+</div>
+
+`;
+
+   });
+
+  }
+
+
+  box.innerHTML=html;
+
+  return;
+
+ }
+
+
+
+ /* =====================================================
+    minimum
+   
+    各期間ごとに、
+    「その期間だけで最低どれくらい必要か」
+    を計算。
+ ===================================================== */
+
+ if(mode==='minimum'){
+
+  let balance=currentCrystals();
+
+  let previousDate=todayStr();
+
+  let html='';
+
+  let maxRequired=0;
+
+
+  list.forEach((t,i)=>{
+
+   const ceiling=
+    Number(t.ceiling||0);
+
+   const d=
+    daysBetween(
+     previousDate,
+     t.date
+    );
+
+
+   const need=
+    Math.max(
+     0,
+     ceiling-balance
+    );
+
+
+   const rate=
+    d>0
+     ?Math.ceil(need/d)
+     :(need>0?Infinity:0);
+
+
+   if(
+    Number.isFinite(rate) &&
+    rate>maxRequired
+   ){
+
+    maxRequired=rate;
+
+   }
+
+
+   /*
+     最低量だけ獲得した場合。
+
+     余った分は次へ。
    */
+
+   const earned=
+    Number.isFinite(rate)
+     ?rate*Math.max(0,d)
+     :0;
+
+
+   const beforeGet=
+    balance+earned;
+
 
    const after=
     Math.max(
@@ -1201,46 +2143,33 @@ function renderPlan(){
 
 <br><br>
 
-
 実装日：
-<b>
-${esc(t.date||'未設定')}
-</b>
+<b>${esc(t.date)}</b>
 
 <br>
 
-実装まで：
+このカードまでの日数：
 <b>
-${
- d>=0
-  ?fmt(d)+'日'
-  :'実装済み'
-}
+${d<0?'実装済み':fmt(d)+'日'}
 </b>
-
 
 <br><br>
 
-
-前のカード取得後の残高：
+前のカード取得後：
 <b>
 ${fmt(balance)}個
 </b>
 
-
 <br>
 
-
-このカードまでに必要：
+このカードに必要：
 <b>
 ${fmt(need)}個
 </b>
 
-
 <br>
 
-
-必要獲得量：
+この期間の最低獲得量：
 <b>
 ${
  Number.isFinite(rate)
@@ -1249,37 +2178,27 @@ ${
 }
 </b>
 
-
 <br>
-
 
 カード取得直前：
 <b>
 ${fmt(beforeGet)}個
 </b>
 
-
 <br>
-
 
 天井消費：
 <b>
 -${fmt(ceiling)}個
 </b>
 
-
 <br>
 
-
 <span class="note">
-
-カード取得後、
-次のカードへ繰り越す残高：
-
+次のカードへ繰り越す：
 <b>
 ${fmt(after)}個
 </b>
-
 </span>
 
 </div>
@@ -1291,38 +2210,37 @@ ${fmt(after)}個
 
    previousDate=t.date;
 
-  }
+  });
 
 
-  if(possible){
+  html=`
 
-   html+=`
+<div class="totalBox">
 
-<div class="planGood">
+<div>
+各カードの実装日を守るため、
+それぞれの期間で最低限必要な獲得量
+</div>
 
-✅ 先行カードの消費を考慮して計算しています。<br>
+<div class="big">
 
-カードを取得したときに天井分を消費し、
-残ったクリスタルだけを次のカードへ繰り越します。
+${Number.isFinite(maxRequired)
+ ?fmt(maxRequired)+' 個/日'
+ :'計算できません'}
 
 </div>
 
-`;
+<div class="note" style="color:#fff">
 
-  }else{
-
-   html+=`
-
-<div class="planAlert">
-
-⚠️ 設定した最高1日クリスタル獲得量では、
-実装日までに間に合わない区間があります。
+カードを取った後の残高は、
+次のカードへ繰り越しています。
 
 </div>
 
-`;
+</div>
 
-  }
+`
+  +html;
 
 
   box.innerHTML=html;
@@ -1331,335 +2249,13 @@ ${fmt(after)}個
 
  }
 
-
-
- /* =====================================================
-    constant / minimum
-
-    全カードを間に合わせるために、
-    毎日どれだけ必要かを計算する。
-
-    各カード取得後の残高を次のカードに繰り越す。
- ===================================================== */
-
- if(
-  mode==='constant' ||
-  mode==='minimum'
- ){
-
-  /*
-   二分探索ではなく、
-   各カードについて必要な速度を計算。
-
-   カード1までの必要量
-   カード2までの必要量
-   ...
-   
-   の最大値を採用する。
-  */
-
-  let requiredRate=0;
-
-  let bottleneck=null;
-
-  let balance=initial;
-
-  let previousDate=todayStr();
-
-
-  for(const t of list){
-
-   const ceiling=
-    Number(t.ceiling||0);
-
-   const d=
-    daysBetween(
-     previousDate,
-     t.date
-    );
-
-   const need=
-    Math.max(
-     0,
-     ceiling-balance
-    );
-
-
-   let rate;
-
-   if(d>0){
-
-    rate=
-     Math.ceil(
-      need/d
-     );
-
-   }else{
-
-    rate=
-     need>0
-      ?Infinity
-      :0;
-
-   }
-
-
-   if(rate>requiredRate){
-
-    requiredRate=rate;
-
-    bottleneck=t;
-
-   }
-
-
-   /*
-    現在の必要獲得量で
-    このカードまでに貯める。
-   */
-
-   if(
-    d>0 &&
-    Number.isFinite(requiredRate)
-   ){
-
-    balance+=
-     requiredRate*d;
-
-   }
-
-
-   /*
-    カード取得
-   */
-
-   balance=
-    Math.max(
-     0,
-     balance-ceiling
-    );
-
-
-   previousDate=t.date;
-
-  }
-
-
-  const rows=
-   calculatePlan(requiredRate);
-
-
-  let html=`
-
-<div class="planMain">
-
-${
- mode==='constant'
-  ?'毎日同じ量で全カードに間に合わせるための必要獲得量'
-  :'全カードを間に合わせるための最低必要獲得量'
-}
-
-<br>
-
-<b>
-
-${
- Number.isFinite(requiredRate)
-  ?fmt(requiredRate)+'個/日'
-  :'計算不能'
-}
-
-</b>
-
-
-${
- max
-  ?'<span class="note">（上限：'
-   +fmt(max)
-   +'個/日）</span>'
-  :''
-}
-
-
-${
- bottleneck
-  ?'<br><span class="note">最も厳しいカード：'
-   +esc(
-    bottleneck.name||
-    '名前未設定'
-   )
-   +'</span>'
-  :''
-}
-
-</div>
-
-`;
-
-
-  if(
-   max &&
-   Number.isFinite(requiredRate) &&
-   requiredRate>max
-  ){
-
-   html+=`
-
-<div class="planAlert">
-
-⚠️ 必要獲得量が設定した最高1日クリスタル獲得量を超えています。
-
-</div>
-
-`;
-
-  }
-
-
-  rows.forEach(r=>{
-
-   html+=`
-
-<div class="planMain">
-
-<b>
-🎯 ${esc(r.t.name||'名前未設定')}
-</b>
-
-<br>
-
-
-実装日まで：
-
-<b>
-${
- r.d>=0
-  ?fmt(r.d)+'日'
-  :'実装済み'
-}
-</b>
-
-
-<br>
-
-
-前のカード取得後の残高：
-
-<b>
-${fmt(r.balanceBefore)}個
-</b>
-
-
-<br>
-
-
-このカードまでに必要：
-
-<b>
-${fmt(r.need)}個
-</b>
-
-
-<br>
-
-
-必要獲得量：
-
-<b>
-${
- Number.isFinite(requiredRate)
-  ?fmt(requiredRate)+'個/日'
-  :'間に合いません'
-}
-</b>
-
-
-<br>
-
-
-カード取得直前：
-
-<b>
-${fmt(r.beforeGet)}個
-</b>
-
-
-<br>
-
-
-天井消費：
-
-<b>
--${fmt(r.ceiling)}個
-</b>
-
-
-<br>
-
-
-<span class="note">
-
-カード取得後、
-次のカードへ繰り越す残高：
-
-<b>
-${fmt(r.after)}個
-</b>
-
-</span>
-
-</div>
-
-`;
-
-  });
-
-
-  if(
-   Number.isFinite(requiredRate) &&
-   (!max || requiredRate<=max)
-  ){
-
-   html+=`
-
-<div class="planGood">
-
-✅ カードの実装順と先行消費を考慮して計算済みです。<br>
-
-先に取ったカードで使ったクリスタルを考慮し、
-残ったクリスタルは次のカードへ自動的に繰り越します。
-
-</div>
-
-`;
-
-  }else{
-
-   html+=`
-
-<div class="planAlert">
-
-⚠️ 現在の条件では、
-すべてのカードを実装日までに確保できません。
-
-</div>
-
-`;
-
-  }
-
-
-  box.innerHTML=html;
-
- }
-
 }
 
 
 
-/* =========================
+/* =====================================================
    記録一覧
-========================= */
+===================================================== */
 
 function renderRecords(){
 
@@ -1680,13 +2276,16 @@ function renderRecords(){
  }
 
 
- r.slice().reverse().forEach((x,ri)=>{
+ r.slice().reverse().forEach(x=>{
 
   const idx=
    data.records.indexOf(x);
 
+  const pos=
+   r.indexOf(x);
+
   const prev=
-   r[r.indexOf(x)-1];
+   r[pos-1];
 
   const diff=
    prev
@@ -1694,19 +2293,16 @@ function renderRecords(){
      Number(prev.crystals)
     :null;
 
+
   const tr=
    document.createElement('tr');
 
 
   tr.innerHTML=`
 
-<td>
-${x.date}
-</td>
+<td>${x.date}</td>
 
-<td>
-${fmt(x.crystals)}
-</td>
+<td>${fmt(x.crystals)}</td>
 
 <td>
 ${
@@ -1742,6 +2338,7 @@ onclick="deleteRecord(${idx})">
 }
 
 
+
 window.editRecord=i=>{
 
  const r=data.records[i];
@@ -1765,7 +2362,9 @@ window.editRecord=i=>{
 
 window.deleteRecord=i=>{
 
- if(!confirm('この記録を削除しますか？'))
+ if(!confirm(
+  'この記録を削除しますか？'
+ ))
   return;
 
  data.records.splice(i,1);
@@ -1812,8 +2411,8 @@ $('record').onclick=()=>{
 
 
  if(
-  !date ||
-  !Number.isFinite(cr) ||
+  !date||
+  !Number.isFinite(cr)||
   cr<0
  ){
 
@@ -1829,7 +2428,7 @@ $('record').onclick=()=>{
  const duplicate=
   data.records.findIndex(
    (r,i)=>
-    r.date===date &&
+    r.date===date&&
     i!==editingIndex
   );
 
@@ -1848,14 +2447,14 @@ $('record').onclick=()=>{
  if(editingIndex===null){
 
   data.records.push({
-   date,
+   date:date,
    crystals:Math.floor(cr)
   });
 
  }else{
 
   data.records[editingIndex]={
-   date,
+   date:date,
    crystals:Math.floor(cr)
   };
 
@@ -1872,9 +2471,9 @@ $('record').onclick=()=>{
 
 
 
-/* =========================
+/* =====================================================
    カード追加
-========================= */
+===================================================== */
 
 $('addTarget').onclick=()=>{
 
@@ -1900,9 +2499,9 @@ $('addTarget').onclick=()=>{
 
 
 
-/* =========================
+/* =====================================================
    計算設定
-========================= */
+===================================================== */
 
 $('planMode').onchange=e=>{
 
@@ -1932,9 +2531,9 @@ $('maxDaily').oninput=e=>{
 
 
 
-/* =========================
+/* =====================================================
    グラフ
-========================= */
+===================================================== */
 
 function drawChart(){
 
@@ -1946,7 +2545,13 @@ function drawChart(){
 
  const H=c.height;
 
- ctx.clearRect(0,0,W,H);
+ ctx.clearRect(
+  0,
+  0,
+  W,
+  H
+ );
+
 
  const r=sortedRecords();
 
@@ -2055,9 +2660,15 @@ function drawChart(){
   );
 
   if(i)
-   ctx.lineTo(xx,yy);
+   ctx.lineTo(
+    xx,
+    yy
+   );
   else
-   ctx.moveTo(xx,yy);
+   ctx.moveTo(
+    xx,
+    yy
+   );
 
  });
 
@@ -2088,9 +2699,9 @@ function drawChart(){
 
 
 
-/* =========================
+/* =====================================================
    全体更新
-========================= */
+===================================================== */
 
 function update(){
 
@@ -2112,26 +2723,29 @@ function update(){
 
 
 
-/* =========================
+/* =====================================================
    CSV
-========================= */
+===================================================== */
 
 $('exportCsv').onclick=()=>{
 
  const rows=[
   ['date','crystals'],
-  ...sortedRecords()
-   .map(r=>[
+  ...sortedRecords().map(
+   r=>[
     r.date,
     r.crystals
-   ])
+   ]
+  )
  ];
+
 
  const csv=
   '\uFEFF'+
   rows
    .map(a=>a.join(','))
    .join('\n');
+
 
  const blob=
   new Blob(
@@ -2140,6 +2754,7 @@ $('exportCsv').onclick=()=>{
     type:'text/csv;charset=utf-8'
    }
   );
+
 
  const a=
   document.createElement('a');
@@ -2157,6 +2772,7 @@ $('exportCsv').onclick=()=>{
  );
 
 };
+
 
 
 $('importCsv').onchange=e=>{
@@ -2181,7 +2797,11 @@ $('importCsv').onchange=e=>{
   const imported=[];
 
 
-  for(let i=1;i<lines.length;i++){
+  for(
+   let i=1;
+   i<lines.length;
+   i++
+  ){
 
    const [
     date,
@@ -2191,12 +2811,12 @@ $('importCsv').onchange=e=>{
 
 
    if(
-    /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+    /^\d{4}-\d{2}-\d{2}$/.test(date)&&
     Number.isFinite(Number(cr))
    ){
 
     imported.push({
-     date,
+     date:date,
      crystals:Number(cr)
     });
 
@@ -2241,9 +2861,9 @@ $('importCsv').onchange=e=>{
 
 
 
-/* =========================
+/* =====================================================
    リセット
-========================= */
+===================================================== */
 
 $('resetAll').onclick=async()=>{
 
@@ -2295,9 +2915,9 @@ $('resetAll').onclick=async()=>{
 
 
 
-/* =========================
+/* =====================================================
    起動
-========================= */
+===================================================== */
 
 $('recordDate').value=
  todayStr();
@@ -2307,9 +2927,9 @@ renderTargets();
 update();
 
 
-/* =========================
+/* =====================================================
    Service Worker
-========================= */
+===================================================== */
 
 if(
  'serviceWorker' in navigator &&
