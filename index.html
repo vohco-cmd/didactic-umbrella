@@ -2,2907 +2,374 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#6c63ff">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#6c63ff">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>プロセカ ガチャ禁管理</title>
-
 <style>
-*{box-sizing:border-box}
-
-body{
- margin:0;
- background:#f5f6fb;
- color:#202124;
- font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;background:#f5f6fb;color:#222}
+header{background:linear-gradient(135deg,#6c63ff,#8b7cff);color:#fff;padding:18px 16px 22px;text-align:center}
+h1{margin:0 0 8px;font-size:24px}.sub{font-size:12px;opacity:.9}
+.photoBox{max-width:420px;margin:14px auto 0}
+.targetPhotos{margin-top:10px}.targetPhotoGallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:10px;padding:4px 2px 10px;align-items:start}.photoItem{min-width:0}.photoItem img{display:block;width:100%;height:auto;max-width:100%;max-height:280px;object-fit:contain;border-radius:12px;background:#eee;margin:auto}.photoX{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:27px;height:27px;background:rgba(0,0,0,.68);color:#fff;font-weight:700;cursor:pointer}.photoBtns{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.photoBtn{background:#e9e7ff;color:#554dc6}
+main{max-width:820px;margin:auto;padding:14px}.card{background:#fff;border-radius:18px;padding:17px;margin-bottom:14px;box-shadow:0 5px 18px #30306012}
+h2{font-size:17px;margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+label{font-size:12px;color:#666;display:block;margin-bottom:5px}input{width:100%;padding:11px;border:1px solid #ddd;border-radius:10px;font-size:16px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.primary{background:#6c63ff;color:#fff}.secondary{background:#eeeefa;color:#554dc6}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#f6f6ff;border-radius:12px;padding:11px}.stat span{font-size:11px;color:#666}.stat b{display:block;font-size:20px;color:#5148c9;margin-top:4px}
+.progress{height:13px;background:#e7e7f0;border-radius:20px;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:#6c63ff}
+canvas{width:100%;height:280px;background:#fbfbfe;border-radius:12px}.note{font-size:12px;color:#777;line-height:1.6}.targetBox,.summaryBox{border:1px solid #e6e6f2;border-radius:14px;padding:13px;margin-bottom:10px;background:#fafaff}.targetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.summaryTitle{font-size:16px;font-weight:800;color:#5148c9;margin-bottom:10px}.summaryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.summaryGrid>div{background:#fff;border-radius:10px;padding:9px}.summaryGrid span{font-size:11px;color:#666}.summaryGrid b{display:block;font-size:15px;margin-top:3px}.planAlert{padding:10px 12px;border-radius:10px;background:#fff0f2;color:#a33;margin-bottom:10px;font-size:13px}.planGood{padding:10px 12px;border-radius:10px;background:#eefbf3;color:#267044;margin-bottom:10px;font-size:13px}.planMain{padding:12px;border-radius:12px;background:#f1f0ff;margin-bottom:10px}.planMain b{font-size:21px;color:#5148c9}.planTable{width:100%;border-collapse:collapse;font-size:12px}.planTable th,.planTable td{padding:8px 5px;border-bottom:1px solid #e8e8ef;text-align:left}.planTable th{color:#666;font-weight:700}.planNum{text-align:right!important;white-space:nowrap}@media(max-width:650px){
+.summaryGrid{grid-template-columns:1fr 1fr}
+.planTable{font-size:12px;display:block;width:100%;}
+.planTable thead{display:none}
+.planTable tbody,.planTable tr,.planTable td{display:block;width:100%;}
+.planTable tr{border-bottom:1px solid #e8e8ef;padding:10px 0;}
+.planTable td{padding:5px 4px;border:0;text-align:left!important;white-space:normal;overflow-wrap:anywhere;word-break:break-word;}
+.planTable td::before{content:attr(data-label);display:inline-block;min-width:8em;margin-right:8px;color:#666;font-weight:700;}
+.planTable td.planNum{text-align:left!important;white-space:normal;}
+.planTable td.planNum::before{min-width:8em;}
 }
-
-header{
- background:linear-gradient(135deg,#6c63ff,#8d7cff);
- color:#fff;
- padding:22px 16px
-}
-
-header h1{
- margin:0;
- font-size:24px
-}
-
-header p{
- margin:6px 0 0;
- opacity:.9;
- font-size:13px
-}
-
-.wrap{
- max-width:980px;
- margin:auto;
- padding:14px
-}
-
-.card{
- background:#fff;
- border-radius:16px;
- padding:16px;
- margin:12px 0;
- box-shadow:0 3px 14px #0000000d
-}
-
-.card h2{
- font-size:18px;
- margin:0 0 12px
-}
-
-.grid{
- display:grid;
- grid-template-columns:repeat(2,minmax(0,1fr));
- gap:10px
-}
-
-.field label{
- display:block;
- font-size:12px;
- font-weight:700;
- margin:0 0 5px;
- color:#666
-}
-
-.field input,
-.field select{
- width:100%;
- padding:10px;
- border:1px solid #d9d9e3;
- border-radius:10px;
- background:#fff;
- font:inherit
-}
-
-.btn{
- border:0;
- border-radius:10px;
- padding:10px 14px;
- background:#6c63ff;
- color:#fff;
- font-weight:700;
- cursor:pointer
-}
-
-.btn.sub{
- background:#eeeef5;
- color:#333
-}
-
-.btn.danger{
- background:#ffe8ec;
- color:#b4233c
-}
-
-.actions{
- display:flex;
- gap:8px;
- flex-wrap:wrap;
- margin-top:10px
-}
-
-.target{
- border:1px solid #e2e2eb;
- border-radius:14px;
- padding:14px;
- margin:10px 0
-}
-
-.targetHead{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:8px
-}
-
-.targetHead strong{
- font-size:16px
-}
-
-.summaryBox{
- border:1px solid #e3e2f4;
- background:#faf9ff;
- border-radius:14px;
- padding:14px;
- margin:10px 0
-}
-
-.summaryTitle{
- font-weight:800;
- margin-bottom:10px
-}
-
-.summaryGrid{
- display:grid;
- grid-template-columns:repeat(3,minmax(0,1fr));
- gap:8px
-}
-
-.summaryGrid>div{
- background:#fff;
- border-radius:10px;
- padding:9px
-}
-
-.summaryGrid span{
- display:block;
- font-size:11px;
- color:#777
-}
-
-.summaryGrid b{
- display:block;
- margin-top:3px;
- font-size:15px
-}
-
-.progress{
- height:9px;
- background:#e9e9f1;
- border-radius:99px;
- overflow:hidden;
- margin-top:10px
-}
-
-.bar{
- height:100%;
- background:#6c63ff
-}
-
-.photoGrid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
- gap:8px;
- margin-top:10px
-}
-
-.photoItem{
- position:relative;
- border-radius:10px;
- overflow:hidden;
- background:#f0f0f5;
- min-height:90px;
- display:flex;
- align-items:center;
- justify-content:center
-}
-
-.photoItem img{
- display:block;
- width:100%;
- max-height:240px;
- object-fit:contain
-}
-
-.photoItem button{
- position:absolute;
- right:5px;
- top:5px;
- border:0;
- border-radius:50%;
- width:28px;
- height:28px;
- background:#000b;
- color:#fff;
- cursor:pointer
-}
-
-.planMain{
- background:#f0efff;
- border-radius:12px;
- padding:14px;
- margin:10px 0;
- font-weight:700
-}
-
-.planGood{
- background:#eaf8ef;
- color:#176b37;
- border-radius:10px;
- padding:10px;
- margin:8px 0
-}
-
-.planAlert{
- background:#fff1f2;
- color:#a52238;
- border-radius:10px;
- padding:10px;
- margin:8px 0
-}
-
-.note{
- font-size:12px;
- color:#666;
- font-weight:400
-}
-
-.totalBox{
- background:#6c63ff;
- color:#fff;
- border-radius:14px;
- padding:16px;
- margin:10px 0
-}
-
-.totalBox .big{
- font-size:25px;
- font-weight:900;
- margin-top:5px
-}
-
-.tableWrap{
- overflow-x:auto
-}
-
-table{
- width:100%;
- border-collapse:collapse;
- font-size:13px
-}
-
-th,td{
- padding:9px;
- border-bottom:1px solid #eee;
- text-align:left;
- white-space:nowrap
-}
-
-th{
- color:#666;
- font-size:12px
-}
-
-canvas{
- width:100%;
- height:280px;
- border:1px solid #eee;
- border-radius:12px;
- background:#fff
-}
-
-.muted{
- color:#777;
- font-size:13px
-}
-
-.hidden{
- display:none!important
-}
-
-@media(max-width:650px){
- .grid,.summaryGrid{
-  grid-template-columns:1fr
- }
-
- .wrap{
-  padding:10px
- }
-
- .card{
-  padding:13px
- }
-
- header h1{
-  font-size:21px
- }
-}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 5px;border-bottom:1px solid #eee;text-align:left}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
-
 <body>
-
 <header>
-<div class="wrap">
-<h1>🎵 プロセカ ガチャ禁管理</h1>
-<p>欲しいカード・実装日・天井・毎日のクリスタルをまとめて管理</p>
-</div>
+  <h1>🎟️ プロセカ ガチャ禁管理</h1>
+  <div class="sub">欲しいカードが来るまでクリスタルを貯めよう</div>
+
 </header>
 
-<main class="wrap">
-
+<main>
 <section class="card">
-<h2>① 欲しいカード</h2>
+<h2>① 欲しいカードの目標設定</h2>
 <div id="targets"></div>
-<button class="btn" id="addTarget">＋ 欲しいカードを追加</button>
+<div class="actions"><button class="btn primary" id="addTarget">＋ 欲しいカードを追加</button></div>
+<p class="note">カードごとに実装日・天井まで必要なクリスタル・必要な1日あたり獲得量を個別に管理できます。</p>
 </section>
 
 <section class="card">
-
-<h2>② 今日のクリスタル</h2>
-
-<div class="grid">
-
-<div class="field">
-<label>記録する日付</label>
-<input id="recordDate" type="date">
-</div>
-
-<div class="field">
-<label>その日の所持クリスタル</label>
-<input id="current" type="number" min="0" step="1" placeholder="例：23600">
-</div>
-
-</div>
-
-<div class="actions">
-<button class="btn" id="record">この日付の記録を保存</button>
-<button class="btn sub hidden" id="cancelEdit">編集をキャンセル</button>
-</div>
-
-<p class="muted">
-同じ日付をもう一度保存すると、その日の記録を更新できます。
-</p>
-
+<h2>② 欲しいカード別の必要量</h2>
+<div id="targetSummary"></div>
 </section>
 
 <section class="card">
-
-<h2>③ 必要獲得量の計算</h2>
-
-<div class="grid">
-
-<div class="field">
-
-<label>計算方法</label>
-
-<select id="planMode">
-
-<option value="zero">
-カードごとに天井分を確保する
-</option>
-
-<option value="minimum">
-全カードを考慮して1日あたり必要量を最小にする
-</option>
-
-<option value="constant">
-全期間で毎日同じ量にする
-</option>
-
-</select>
-
-</div>
-
-<div class="field">
-
-<label>最高1日クリスタル獲得量（任意）</label>
-
-<input
-id="maxDaily"
-type="number"
-min="0"
-step="1"
-placeholder="例：1000"
->
-
-</div>
-
-</div>
-
-<div id="plan"></div>
-
+<h2>③ 全ての欲しいカードを取るための計画</h2>
+<div class="grid" style="margin-bottom:12px"><div><label>計算方法</label><select id="planMode"><option value="zero">カード取得時に残り0にする</option><option value="minimum">1日あたり必要量を最小にする（残りを残してOK）</option><option value="constant">全ての日で同じ獲得量にして間に合わせる</option></select></div><div><label>最高1日クリスタル獲得量</label><input id="maxDaily" type="number" min="0" placeholder="例：1000"></div></div>
+<div id="allTargetPlan"></div>
+<p class="note">カードを取った時点で天井分のクリスタルを使う前提で、次のカードまでに必要な獲得量を連続して計算します。必要獲得量/日は、全カードに間に合わせるための区間ごとの最大値です。</p>
 </section>
 
 <section class="card">
-
-<h2>④ 現在の状況</h2>
-
-<div id="summary"></div>
-
+<h2>④ クリスタル推移</h2>
+<canvas id="chart" width="760" height="280"></canvas>
+<p class="note">実線＝所持クリスタル、点線＝天井ライン。</p>
 </section>
 
 <section class="card">
-
-<h2>⑤ クリスタル推移</h2>
-
-<canvas
-id="chart"
-width="900"
-height="280">
-</canvas>
-
+<h2>⑤ 記録</h2>
+<div class="grid"><div><label>記録する日付</label><input id="recordDate" type="date"></div><div><label>その日の所持クリスタル</label><input id="current" type="number" min="0" value="0"></div></div>
+<div class="actions" style="margin-top:0"><button class="btn primary" id="record">この日付の記録を保存</button><button class="btn secondary" id="cancelEdit" style="display:none">編集をキャンセル</button><button class="btn secondary" id="csvOut">CSVを書き出す</button><button class="btn secondary" id="csvInBtn">CSVを読み込む</button><input id="csvIn" type="file" accept=".csv" style="display:none"><button class="btn" id="clear" style="background:#ffe8eb;color:#b33">全削除</button></div>
+<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>日付</th><th>クリスタル</th><th>前日比</th><th></th></tr></thead><tbody id="records"></tbody></table></div>
 </section>
-
-<section class="card">
-
-<h2>⑥ 記録一覧</h2>
-
-<div class="tableWrap">
-
-<table>
-
-<thead>
-
-<tr>
-<th>日付</th>
-<th>所持数</th>
-<th>前回から</th>
-<th>操作</th>
-</tr>
-
-</thead>
-
-<tbody id="records"></tbody>
-
-</table>
-
-</div>
-
-<div class="actions">
-
-<button
-class="btn sub"
-id="exportCsv">
-CSVを書き出す
-</button>
-
-<label
-class="btn sub"
-for="importCsv">
-CSVを読み込む
-</label>
-
-<input
-id="importCsv"
-class="hidden"
-type="file"
-accept=".csv,text/csv"
->
-
-</div>
-
-</section>
-
-<section class="card">
-
-<h2>⑦ データをリセット</h2>
-
-<p class="muted">
-この端末に保存しているカード・写真・クリスタル記録をすべて消します。
-</p>
-
-<button
-class="btn danger"
-id="resetAll">
-すべてリセット
-</button>
-
-</section>
-
 </main>
 
 <script>
-
-'use strict';
-
-
-/* =====================================================
-   基本
-===================================================== */
-
 const $=id=>document.getElementById(id);
+let settings=JSON.parse(localStorage.getItem("pk_settings_v2")||"{}");
+let records=JSON.parse(localStorage.getItem("pk_records_v2")||"[]");
+let targets=JSON.parse(localStorage.getItem("pk_targets_v1")||"[]");
+if(!targets.length && settings.cardName){targets=[{id:Date.now(),name:settings.cardName,date:settings.targetDate||"",ceiling:Number(settings.ceiling||90000)}]}
 
-const KEY='proseka_gachakin_v3';
+function save(){localStorage.setItem("pk_settings_v2",JSON.stringify(settings));localStorage.setItem("pk_records_v2",JSON.stringify(records));localStorage.setItem("pk_targets_v1",JSON.stringify(targets))}
+function fmt(n){return Number(n||0).toLocaleString("ja-JP")}
+function daysUntil(s){if(!s)return null;let a=new Date();a.setHours(0,0,0,0);return Math.ceil((new Date(s+"T00:00:00")-a)/86400000)}
 
-
-let data=
-JSON.parse(localStorage.getItem(KEY)||'null')
-||
-{
- targets:[
-  {
-   id:Date.now(),
-   name:'',
-   date:'',
-   ceiling:90000
-  }
- ],
- records:[],
- planMode:'minimum',
- maxDaily:0
-};
-
-
-let editingIndex=null;
-
-
-const esc=s=>
-String(s??'').replace(
- /[&<>"']/g,
- c=>({
-  '&':'&amp;',
-  '<':'&lt;',
-  '>':'&gt;',
-  '"':'&quot;',
-  "'":'&#39;'
- }[c])
-);
-
-
-const fmt=n=>
-Number(n||0).toLocaleString('ja-JP');
-
-
-const save=()=>
-localStorage.setItem(KEY,JSON.stringify(data));
-
-
-const todayStr=()=>{
-
- const d=new Date();
-
- return d.getFullYear()
- +'-'
- +String(d.getMonth()+1).padStart(2,'0')
- +'-'
- +String(d.getDate()).padStart(2,'0');
-
-};
-
-
-const daysBetween=(a,b)=>
-(
- new Date(b+'T00:00:00')-
- new Date(a+'T00:00:00')
-)/86400000;
-
-
-const daysUntil=d=>
- d?daysBetween(todayStr(),d):null;
-
-
-
-/* =====================================================
-   記録
-===================================================== */
-
-function sortedRecords(){
-
- return data.records
- .filter(r=>
-  r &&
-  r.date &&
-  Number.isFinite(Number(r.crystals))
- )
- .slice()
- .sort((a,b)=>a.date.localeCompare(b.date));
-
+function openPhotoDB(){
+  return new Promise((resolve,reject)=>{
+    const r=indexedDB.open("ProsekaGachaDB",1);
+    r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains("images"))r.result.createObjectStore("images")};
+    r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);
+  });
+}
+async function getTargetPhotos(targetId){
+  const db=await openPhotoDB();
+  return new Promise((resolve,reject)=>{
+    const r=db.transaction("images","readonly").objectStore("images").getAllKeys();
+    r.onsuccess=async()=>{
+      const keys=(r.result||[]).filter(k=>String(k).startsWith("target_"+targetId+"_"));
+      const store=db.transaction("images","readonly").objectStore("images");
+      const out=[];
+      for(const key of keys){
+        const item=await new Promise((res,rej)=>{const q=store.get(key);q.onsuccess=()=>res({key,blob:q.result});q.onerror=()=>rej(q.error)});
+        if(item.blob) out.push(item);
+      }
+      resolve(out);
+    };
+    r.onerror=()=>reject(r.error);
+  });
+}
+async function saveTargetPhotos(targetId,files){
+  const db=await openPhotoDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction("images","readwrite"),store=tx.objectStore("images");
+    files.forEach((f,i)=>store.put(f,"target_"+targetId+"_"+Date.now()+"_"+i));
+    tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+  });
+}
+async function deleteTargetPhoto(key){
+  const db=await openPhotoDB();
+  return new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
+}
+async function deleteTargetPhotos(targetId){
+  const db=await openPhotoDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction("images","readwrite"),store=tx.objectStore("images"),q=store.getAllKeys();
+    q.onsuccess=()=>{(q.result||[]).filter(k=>String(k).startsWith("target_"+targetId+"_")).forEach(k=>store.delete(k))};
+    tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+  });
+}
+async function deleteAllPhotos(){
+  const db=await openPhotoDB();
+  return new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
 }
 
-
-function currentCrystals(){
-
- const r=sortedRecords();
-
- return r.length
-  ?Number(r[r.length-1].crystals)
-  :0;
-
-}
-
-
-function cumulativeDaily(){
-
- const r=sortedRecords();
-
- if(r.length<2)
-  return null;
-
- let totalGain=0;
- let totalDays=0;
-
- for(let i=1;i<r.length;i++){
-
-  const d=daysBetween(
-   r[i-1].date,
-   r[i].date
-  );
-
-  if(d>0){
-
-   totalGain+=
-    Number(r[i].crystals)-
-    Number(r[i-1].crystals);
-
-   totalDays+=d;
-
-  }
-
- }
-
- return totalDays>0
-  ?totalGain/totalDays
-  :null;
-
-}
-
-
-
-/* =====================================================
-   カード
-===================================================== */
-
-function sortedTargets(){
-
- return data.targets
- .filter(t=>
-  t &&
-  t.date &&
-  Number.isFinite(Number(t.ceiling)) &&
-  Number(t.ceiling)>=0
- )
- .slice()
- .sort((a,b)=>a.date.localeCompare(b.date));
-
-}
-
-
-function renderTargets(){
-
- const box=$('targets');
-
- box.innerHTML='';
-
- data.targets.forEach((t,i)=>{
-
-  const el=document.createElement('div');
-
-  el.className='target';
-
-  el.innerHTML=`
-
-<div class="targetHead">
-
-<strong>
-🎯 欲しいカード ${i+1}
-</strong>
-
-<button
-class="btn danger"
-onclick="removeTarget(${i})">
-削除
-</button>
-
-</div>
-
-<div
-class="grid"
-style="margin-top:10px"
->
-
-<div class="field">
-
-<label>カード名</label>
-
-<input
-value="${esc(t.name)}"
-oninput="changeTarget(${i},'name',this.value)"
-placeholder="例：初音ミク ○○カード"
->
-
-</div>
-
-<div class="field">
-
-<label>実装日</label>
-
-<input
-type="date"
-value="${esc(t.date)}"
-onchange="changeTarget(${i},'date',this.value)"
->
-
-</div>
-
-<div class="field">
-
-<label>天井に必要なクリスタル</label>
-
-<input
-type="number"
-min="0"
-value="${Number(t.ceiling)||0}"
-oninput="changeTarget(${i},'ceiling',this.value)"
->
-
-</div>
-
-</div>
-
-<div class="actions">
-
-<label class="btn sub">
-
-📷 写真を追加
-
-<input
-class="hidden"
-type="file"
-accept="image/*"
-multiple
-onchange="addPhotos(${i},this.files)"
->
-
-</label>
-
-<button
-class="btn sub"
-onclick="deleteAllPhotos(${i})">
-写真を全部削除
-</button>
-
-</div>
-
-<div
-class="photoGrid"
-id="photos-${i}">
-</div>
-
-`;
-
-  box.appendChild(el);
-
-  loadPhotos(i);
-
- });
-
-}
-
-
-window.changeTarget=(i,k,v)=>{
-
- data.targets[i][k]=
-  k==='ceiling'
-   ?Math.max(0,Number(v||0))
-   :v;
-
- save();
-
- update();
-
-};
-
-
-window.removeTarget=i=>{
-
- if(!confirm('このカードを削除しますか？'))
-  return;
-
- const id=data.targets[i].id;
-
- data.targets.splice(i,1);
-
- save();
-
- renderTargets();
-
- update();
-
- deletePhotos(id);
-
-};
-
-
-
-/* =====================================================
-   写真DB
-===================================================== */
-
-let dbPromise=null;
-
-
-function openDB(){
-
- if(!('indexedDB' in window))
-  return Promise.reject(
-   new Error('IndexedDB unavailable')
-  );
-
- if(dbPromise)
-  return dbPromise;
-
- dbPromise=new Promise((res,rej)=>{
-
-  const q=indexedDB.open(
-   'ProsekaGachaDB_v3',
-   1
-  );
-
-  q.onupgradeneeded=()=>{
-
-   if(
-    !q.result.objectStoreNames
-    .contains('images')
-   ){
-
-    q.result.createObjectStore(
-     'images',
-     {
-      keyPath:'id',
-      autoIncrement:true
-     }
-    );
-
-   }
-
-  };
-
-  q.onsuccess=()=>res(q.result);
-
-  q.onerror=()=>rej(q.error);
-
- });
-
- return dbPromise;
-
-}
-
-
-async function addPhotos(i,files){
-
- const t=data.targets[i];
-
- if(!t)return;
-
- try{
-
-  const db=await openDB();
-
-  for(
-   const f of [...files].slice(0,10)
-  ){
-
-   await new Promise((res,rej)=>{
-
-    const tx=
-     db.transaction(
-      'images',
-      'readwrite'
-     );
-
-    tx.objectStore('images').add({
-     targetId:t.id,
-     blob:f,
-     name:f.name
+async function renderTargets(){
+  const box=$("targets");box.innerHTML="";
+  targets.forEach((t,i)=>{
+    const el=document.createElement("div");el.className="targetBox";
+    el.innerHTML=`<div class="targetHead"><b>目標 ${i+1}</b><button class="btn secondary removeTarget" type="button">削除</button></div>
+      <div class="grid"><div><label>欲しいカード名</label><input class="tName" value="${esc(t.name||"")}" placeholder="例：○○の限定★4"></div>
+      <div><label>実装予定日</label><input class="tDate" type="date" value="${t.date||""}"></div>
+      <div><label>天井まで必要なクリスタル</label><input class="tCeil" type="number" min="0" value="${Number(t.ceiling||0)}"></div></div>
+      <div class="targetPhotos"><label>このカードの写真</label><div class="targetPhotoGallery"></div>
+        <div class="photoBtns"><label class="btn photoBtn">📷 写真を追加<input class="targetPhotoInput" type="file" accept="image/*" multiple style="display:none"></label>
+        <button class="btn secondary removeTargetPhotos" type="button">写真を全部削除</button></div>
+        <div class="note">このカード専用。最大10枚まで保存できます。</div></div>`;
+    el.querySelector(".removeTarget").onclick=async()=>{await deleteTargetPhotos(t.id);targets.splice(i,1);save();await renderTargets();update()};
+    [".tName",".tDate",".tCeil"].forEach(sel=>el.querySelector(sel).addEventListener("input",()=>{
+      t.name=el.querySelector(".tName").value;t.date=el.querySelector(".tDate").value;t.ceiling=Number(el.querySelector(".tCeil").value||0);save();update();
+    }));
+    const gallery=el.querySelector(".targetPhotoGallery");
+    const renderCardPhotos=async()=>{
+      gallery.innerHTML="";
+      try{
+        const items=await getTargetPhotos(t.id);
+        items.forEach((item,n)=>{
+          const wrap=document.createElement("div");wrap.className="photoItem";
+          const img=document.createElement("img");img.alt=(t.name||"このカード")+" 写真 "+(n+1);const url=URL.createObjectURL(item.blob);img.src=url;
+          wrap.append(img);gallery.appendChild(wrap);
+        });
+      }catch(e){gallery.innerHTML='<div class="note">写真を表示できませんでした</div>'}
+    };
+    el.querySelector(".targetPhotoInput").addEventListener("change",async e=>{
+      const files=[...(e.target.files||[])].filter(f=>f.type.startsWith("image/"));
+      if(!files.length){e.target.value="";return}
+      try{
+        const existing=await getTargetPhotos(t.id),add=files.slice(0,Math.max(0,10-existing.length));
+        if(!add.length){alert("このカードの写真は最大10枚までです");e.target.value="";return}
+        if(files.length>add.length)alert("このカードの写真は最大10枚までです。追加できる分だけ保存しました。");
+        await saveTargetPhotos(t.id,add);await renderCardPhotos();
+      }catch(err){alert("写真の保存に失敗しました。別の画像で試してください。")}
+      e.target.value="";
     });
-
-    tx.oncomplete=res;
-
-    tx.onerror=()=>rej(tx.error);
-
-   });
-
-  }
-
-  loadPhotos(i);
-
- }catch(e){
-
-  alert('写真の保存に失敗しました。');
-
- }
-
-}
-
-
-async function loadPhotos(i){
-
- const box=$('photos-'+i);
-
- if(!box)return;
-
- box.innerHTML='';
-
- try{
-
-  const db=await openDB();
-
-  const all=
-   await new Promise((res,rej)=>{
-
-    const tx=
-     db.transaction(
-      'images',
-      'readonly'
-     );
-
-    const q=
-     tx.objectStore('images').getAll();
-
-    q.onsuccess=()=>res(q.result);
-
-    q.onerror=()=>rej(q.error);
-
-   });
-
-
-  for(
-   const row of all.filter(
-    x=>x.targetId===data.targets[i]?.id
-   )
-  ){
-
-   const u=
-    URL.createObjectURL(row.blob);
-
-   const d=document.createElement('div');
-
-   d.className='photoItem';
-
-   d.innerHTML=`
-
-<img src="${u}" alt="">
-
-<button
-onclick="deletePhoto(${row.id},${i})">
-×
-</button>
-
-`;
-
-   box.appendChild(d);
-
-  }
-
- }catch(e){}
-
-}
-
-
-async function deletePhoto(id,i){
-
- try{
-
-  const db=await openDB();
-
-  await new Promise((res,rej)=>{
-
-   const tx=
-    db.transaction(
-     'images',
-     'readwrite'
-    );
-
-   tx.objectStore('images').delete(id);
-
-   tx.oncomplete=res;
-
-   tx.onerror=()=>rej(tx.error);
-
+    el.querySelector(".removeTargetPhotos").onclick=async()=>{if(confirm("このカードの写真を全部削除しますか？")){await deleteTargetPhotos(t.id);await renderCardPhotos()}};
+    box.appendChild(el);renderCardPhotos();
   });
-
-  loadPhotos(i);
-
- }catch(e){}
-
 }
-
-
-async function deletePhotos(targetId){
-
- try{
-
-  const db=await openDB();
-
-  const all=
-   await new Promise((res,rej)=>{
-
-    const tx=
-     db.transaction(
-      'images',
-      'readonly'
-     );
-
-    const q=
-     tx.objectStore('images').getAll();
-
-    q.onsuccess=()=>res(q.result);
-
-    q.onerror=()=>rej(q.error);
-
-   });
-
-
-  for(
-   const x of all.filter(
-    v=>v.targetId===targetId
-   )
-  ){
-
-   await deletePhoto(x.id,0);
-
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function dateDiffFromToday(s){
+  if(!s)return null;
+  const now=new Date();now.setHours(0,0,0,0);
+  const d=new Date(s+"T00:00:00");
+  return Math.ceil((d-now)/86400000);
+}
+function verifyPlan(rows, rate, initial, maxDaily, mode){
+  if(!rows.length || !Number.isFinite(rate) || rate < 0) return {ok:false,reason:'必要獲得量を正しく計算できませんでした。'};
+  if(maxDaily>0 && rate>maxDaily) return {ok:false,reason:'最高1日獲得量の上限を超えています。'};
+  for(const r of rows){
+    const available=initial+rate*r.days-r.cumulative;
+    if(available < -1e-9) return {ok:false,reason:'「'+(r.t.name||'名前未設定')+'」までに必要量が不足しています。'};
   }
-
- }catch(e){}
-
-}
-
-
-window.addPhotos=addPhotos;
-window.deletePhoto=deletePhoto;
-
-window.deleteAllPhotos=async i=>{
-
- if(!confirm(
-  'このカードの写真を全部削除しますか？'
- ))
-  return;
-
- await deletePhotos(
-  data.targets[i].id
- );
-
- loadPhotos(i);
-
-};
-
-
-
-/* =====================================================
-   計算エンジン
-===================================================== */
-
-/*
-  rate = 1日あたり獲得するクリスタル
-
-  現在の残高
-      ↓
-  カード①までrate×日数を獲得
-      ↓
-  カード①の天井を消費
-      ↓
-  残りをカード②へ
-      ↓
-  ...
-*/
-
-
-function simulate(rate){
-
- const list=sortedTargets();
-
- let balance=currentCrystals();
-
- let previousDate=todayStr();
-
- let totalEarned=0;
- let totalSpent=0;
-
- const rows=[];
-
-
- for(const t of list){
-
-  const ceiling=Math.max(
-   0,
-   Number(t.ceiling||0)
-  );
-
-
-  /*
-    過去の日付は0日として扱う。
-  */
-
-  const days=Math.max(
-   0,
-   daysBetween(
-    previousDate,
-    t.date
-   )
-  );
-
-
-  const earned=
-   Number.isFinite(rate)
-    ?rate*days
-    :0;
-
-
-  const beforeGet=
-   balance+earned;
-
-
-  const shortfall=Math.max(
-   0,
-   ceiling-beforeGet
-  );
-
-
-  const possible=
-   beforeGet>=ceiling;
-
-
-  /*
-    取れる場合は天井分を消費。
-    余った分はそのまま次へ。
-  */
-
-  const after=
-   possible
-    ?beforeGet-ceiling
-    :0;
-
-
-  rows.push({
-
-   t:t,
-   days:days,
-   ceiling:ceiling,
-   startBalance:balance,
-   earned:earned,
-   beforeGet:beforeGet,
-   shortfall:shortfall,
-   after:after,
-   possible:possible
-
-  });
-
-
-  totalEarned+=earned;
-
-
-  if(possible){
-
-   totalSpent+=ceiling;
-
-  }else{
-
-   totalSpent+=beforeGet;
-
+  if(mode==='minimum' && rate>0){
+    const lower=rate-1;
+    const lowerFails=rows.some(r=>initial+lower*r.days-r.cumulative < -1e-9);
+    if(!lowerFails) return {ok:false,reason:'最小必要量の検算に失敗しました。'};
   }
-
-
-  balance=after;
-
-  previousDate=t.date;
-
- }
-
-
- return {
-
-  rows:rows,
-  finalBalance:balance,
-  totalEarned:totalEarned,
-  totalSpent:totalSpent
-
- };
-
+  return {ok:true};
 }
-
-
-
-/* =====================================================
-   全カードを期限内に取れるか
-===================================================== */
-
-function isSimulationPossible(rate){
-
- const result=simulate(rate);
-
- return result.rows.every(
-  r=>r.possible
- );
-
-}
-
-
-
-/* =====================================================
-   全カードを考慮した最低1日量
-===================================================== */
-
-function findMinimumConstantRate(){
-
- const list=sortedTargets();
-
- if(!list.length)
-  return 0;
-
-
- /*
-   最初のカードが今日より前の場合、
-   そのカードまでの日数は0。
-
-   現在の残高で足りないなら、
-   今日からの獲得だけでは間に合わない。
- */
-
- const first=list[0];
-
- const firstDays=
-  daysBetween(
-   todayStr(),
-   first.date
-  );
-
-
- if(
-  firstDays<0 &&
-  currentCrystals()<
-   Number(first.ceiling||0)
- ){
-
-  return Infinity;
-
- }
-
-
- /*
-   まず間に合う上限を探す。
- */
-
- let low=0;
- let high=1;
-
-
- while(
-  high<100000000 &&
-  !isSimulationPossible(high)
- ){
-
-  high*=2;
-
- }
-
-
- if(
-  high>=100000000 &&
-  !isSimulationPossible(high)
- ){
-
-  return Infinity;
-
- }
-
-
- /*
-   1日量を二分探索。
-
-   ここで全カードを同時に判定するため、
-
-   「①を少し余らせて②を楽にする」
-
-   という繰り越しも自動的に考慮される。
- */
-
- for(let i=0;i<60;i++){
-
-  const mid=(low+high)/2;
-
-  if(
-   isSimulationPossible(mid)
-  ){
-
-   high=mid;
-
-  }else{
-
-   low=mid;
-
-  }
-
- }
-
-
- return Math.ceil(high);
-
-}
-
-
-
-/* =====================================================
-   ④ 現在の状況
-===================================================== */
-
-function renderSummary(){
-
- const box=$('summary');
-
- box.innerHTML='';
-
- const list=sortedTargets();
-
- const cur=currentCrystals();
-
- const daily=cumulativeDaily();
-
-
- if(!list.length){
-
-  box.innerHTML=
-   '<p class="muted">欲しいカードを追加してください。</p>';
-
-  return;
-
- }
-
-
- /*
-   現在の残高だけを基準に、
-   カードを順番に見ていく。
- */
-
- let balance=cur;
-
- let previousDate=todayStr();
-
-
- list.forEach((t,index)=>{
-
-  const ceiling=Math.max(
-   0,
-   Number(t.ceiling||0)
-  );
-
-
-  const daysToCard=
-   daysBetween(
-    todayStr(),
-    t.date
-   );
-
-
-  const intervalDays=Math.max(
-   0,
-   daysBetween(
-    previousDate,
-    t.date
-   )
-  );
-
-
-  const needNow=Math.max(
-   0,
-   ceiling-balance
-  );
-
-
-  const dailyNeed=
-   intervalDays>0
-    ?Math.ceil(needNow/intervalDays)
-    :(needNow>0?Infinity:0);
-
-
-  /*
-    現在残高だけで引いた場合。
-  */
-
-  const afterNow=Math.max(
-   0,
-   balance-ceiling
-  );
-
-
-  const rate=
-   ceiling>0
-    ?Math.min(
-     100,
-     balance/ceiling*100
-    )
-    :100;
-
-
-  const e=
-   document.createElement('div');
-
-  e.className='summaryBox';
-
-
-  e.innerHTML=`
-
-<div class="summaryTitle">
-
-🎯 ${esc(t.name||'名前未設定')}
-
-</div>
-
-
-<div class="summaryGrid">
-
-
-<div>
-<span>実装日</span>
-<b>${esc(t.date)}</b>
-</div>
-
-
-<div>
-<span>実装まで</span>
-<b>
-${
- daysToCard<0
-  ?'実装済み'
-  :fmt(daysToCard)+'日'
-}
-</b>
-</div>
-
-
-<div>
-<span>天井</span>
-<b>${fmt(ceiling)}個</b>
-</div>
-
-
-<div>
-<span>現在の繰越</span>
-<b>${fmt(balance)}個</b>
-</div>
-
-
-<div>
-<span>現在の不足分</span>
-<b>${fmt(needNow)}個</b>
-</div>
-
-
-<div>
-<span>不足分を貯める場合</span>
-<b>
-${
- dailyNeed===Infinity
-  ?'間に合わない'
-  :fmt(dailyNeed)+'個/日'
-}
-</b>
-</div>
-
-
-<div>
-<span>取得後の残高</span>
-<b>${fmt(afterNow)}個</b>
-</div>
-
-
-<div>
-<span>現在の獲得ペース</span>
-<b>
-${
- daily===null
-  ?'--'
-  :(daily>=0?'+':'')+
-   fmt(Math.round(daily))+
-   '個/日'
-}
-</b>
-</div>
-
-
-</div>
-
-
-<div class="progress">
-
-<div
-class="bar"
-style="width:${rate}%">
-</div>
-
-</div>
-
-`;
-
-  box.appendChild(e);
-
-
-  balance=afterNow;
-
-  previousDate=t.date;
-
- });
-
-}
-
-
-
-/* =====================================================
-   ③ 必要獲得量
-===================================================== */
-
-function renderPlan(){
-
- const box=$('plan');
-
- const list=sortedTargets();
-
- const mode=data.planMode||'minimum';
-
- const max=Math.max(
-  0,
-  Number(data.maxDaily||0)
- );
-
-
- if(!list.length){
-
-  box.innerHTML=
-   '<p class="muted">カードの実装日を入力すると計算できます。</p>';
-
-  return;
-
- }
-
-
- /* =====================================================
-    zero
- ===================================================== */
-
- if(mode==='zero'){
-
-  let html='';
-
-  let balance=currentCrystals();
-
-  let previousDate=todayStr();
-
-  let totalNeed=0;
-
-
+function renderConstantPlan(list, cur, today, maxDaily){
+  const initial=Math.max(0,Number(cur||0));
+  let cumulative=0;
+  const rows=[];
+  let totalDays=0;
+  let previous=today;
   for(const t of list){
+    const date=new Date(t.date+"T00:00:00");
+    const days=Math.max(0,Math.ceil((date-previous)/86400000));
+    const ceil=Math.max(0,Number(t.ceiling||0));
+    cumulative+=ceil;
+    totalDays+=days;
+    rows.push({t,date,days,ceil,cumulative});
+    previous=date;
+  }
+  let required=0;
+  let elapsed=0;
+  for(const r of rows){
+    elapsed+=r.days;
+    const deficit=Math.max(0,r.cumulative-initial);
+    const need=elapsed>0?deficit/elapsed:(deficit>0?Infinity:0);
+    if(need>required) required=need;
+  }
+  const rate=Math.ceil(required);
+  const balances=rows.map(r=>{
+    const available=initial+rate*(Math.max(0,Math.ceil((r.date-today)/86400000)));
+    return Math.max(0,available-r.cumulative);
+  });
+  rows.forEach((r,i)=>r.balance=balances[i]);
 
-   const ceiling=Math.max(
-    0,
-    Number(t.ceiling||0)
-   );
-
-
-   const days=Math.max(
-    0,
-    daysBetween(
-     previousDate,
-     t.date
-    )
-   );
-
-
-   const need=Math.max(
-    0,
-    ceiling-balance
-   );
-
-
-   const rate=
-    days>0
-     ?Math.ceil(need/days)
-     :(need>0?Infinity:0);
-
-
-   const earned=
-    Number.isFinite(rate)
-     ?rate*days
-     :0;
-
-
-   const beforeGet=
-    balance+earned;
-
-
-   const after=Math.max(
-    0,
-    beforeGet-ceiling
-   );
-
-
-   totalNeed+=need;
-
-
-   html+=`
-
-<div class="planMain">
-
-<div style="font-size:18px;margin-bottom:12px">
-
-🎯 ${esc(t.name||'名前未設定')}
-
-</div>
-
-
-<div class="summaryGrid">
-
-
-<div>
-<span>実装日</span>
-<b>${esc(t.date)}</b>
-</div>
-
-
-<div>
-<span>期間</span>
-<b>${fmt(days)}日</b>
-</div>
-
-
-<div>
-<span>天井</span>
-<b>${fmt(ceiling)}個</b>
-</div>
-
-
-<div>
-<span>繰越</span>
-<b>${fmt(balance)}個</b>
-</div>
-
-
-<div>
-<span>追加で必要</span>
-<b>${fmt(need)}個</b>
-</div>
-
-
-<div>
-<span>必要量/日</span>
-<b>
-${
- Number.isFinite(rate)
-  ?fmt(rate)+'個/日'
-  :'間に合いません'
+  const verification=verifyConstantPlan(rows,rate,initial,maxDaily);
+  if(!verification.ok){
+    return '<div class="planAlert">⚠️ 計算結果の検算で不一致が見つかったため、結果を確定できません。'+esc(verification.reason||'')+'</div>';
+  }
+  const impossible=maxDaily>0 && rate>maxDaily;
+  let html='';
+  if(impossible){
+    html+='<div class="planAlert">⚠️ 全期間を同じ <b>'+fmt(rate)+'個/日</b> で貯める必要がありますが、設定した上限 <b>'+fmt(maxDaily)+'個/日</b> を超えています。</div>';
+  }else{
+    html+='<div class="planGood">✅ 検算OK：毎日同じ <b>'+fmt(rate)+'個/日</b> を獲得すれば、各カードの実装日に間に合います。</div>';
+  }
+  html+='<div class="planMain">毎日同じにする必要獲得量/日<br><b>'+fmt(rate)+'個/日</b>'+(maxDaily>0?' <span class="note">（上限：'+fmt(maxDaily)+'個/日）</span>':'')+'</div>';
+  html+='<div class="note" style="margin-bottom:10px">毎日同じ獲得量で計算し、カード取得後の余りは次のカードへ持ち越します。このモードでは最後のカード取得後も余りが残る場合があります。</div>';
+  html+='<table class="planTable"><thead><tr><th>カード</th><th>実装日</th><th class="planNum">ここまでの累計使用</th><th class="planNum">毎日同じ必要/日</th><th class="planNum">取得後の残り</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const balance=r.balance;
+    html+='<tr><td data-label="カード">'+esc(r.t.name||'名前未設定')+'</td><td data-label="実装日">'+r.t.date+'</td><td data-label="ここまでの累計使用" class="planNum">'+fmt(r.cumulative)+'個</td><td data-label="毎日同じ必要/日" class="planNum">'+fmt(rate)+'個/日'+(maxDaily>0&&rate>maxDaily?' <span style="color:#b33">(上限超過)</span>':'')+'</td><td data-label="取得後の残り" class="planNum">'+fmt(balance)+'個</td></tr>';
+  });
+  html+='</tbody></table>';
+  return html;
 }
-</b>
-</div>
-
-
-</div>
-
-
-<div style="
-margin-top:14px;
-padding:12px;
-background:#fff;
-border-radius:10px;
-line-height:1.8;
-">
-
-${fmt(balance)}個
-＋ ${fmt(earned)}個
-＝ <strong>${fmt(beforeGet)}個</strong>
-
-<br>
-
-− ${fmt(ceiling)}個
-
-<br>
-
-＝ <strong>${fmt(after)}個</strong>
-
-<br>
-
-<span class="note">
-取得後、この残高を次のカードへ繰り越します。
-</span>
-
-</div>
-
-</div>
-
-`;
-
-   balance=after;
-
-   previousDate=t.date;
-
+function verifyConstantPlan(rows, rate, initial, maxDaily){
+  if(!rows.length || !Number.isFinite(rate) || rate<0) return {ok:false,reason:'一定獲得量を正しく計算できませんでした。'};
+  if(maxDaily>0 && rate>maxDaily) return {ok:false,reason:'最高1日獲得量の上限を超えています。'};
+  for(const r of rows){
+    const elapsed=Math.max(0,Math.ceil((r.date-new Date(new Date().setHours(0,0,0,0)))/86400000));
+    if(initial+rate*elapsed+1e-9<r.cumulative) return {ok:false,reason:'「'+(r.t.name||'名前未設定')+'」までに必要量が不足しています。'};
   }
-
-
-  html=`
-
-<div class="totalBox">
-
-<div>
-これから追加で必要なクリスタル
-</div>
-
-<div class="big">
-${fmt(totalNeed)} 個
-</div>
-
-<div class="note" style="color:#fff">
-カードを順番に取得した場合の合計です。
-</div>
-
-</div>
-
-`
-  +html;
-
-
-  box.innerHTML=html;
-
-  return;
-
- }
-
-
-
- /* =====================================================
-    ★ minimum
-    全カードを考慮した最小1日量
- ===================================================== */
-
- if(mode==='minimum'){
-
-  const rate=findMinimumConstantRate();
-
-
-  if(!Number.isFinite(rate)){
-
-   box.innerHTML=`
-
-<div class="planAlert">
-
-⚠️
-
-現在のクリスタルとカードの実装日では、
-最初のカードまでに必要な量を
-計算できません。
-
-</div>
-
-`;
-
-   return;
-
+  if(rate>0){
+    const lower=rate-1;
+    const lowerFails=rows.some(r=>{
+      const elapsed=Math.max(0,Math.ceil((r.date-new Date(new Date().setHours(0,0,0,0)))/86400000));
+      return initial+lower*elapsed+1e-9<r.cumulative;
+    });
+    if(!lowerFails) return {ok:false,reason:'一定獲得量の最小値検算に失敗しました。'};
   }
+  return {ok:true};
+}
 
+function buildGlobalDeadlineRows(list,initial,today){
+  let cumulative=0;
+  const rows=[];
+  for(const t of list){
+    const date=new Date(t.date+"T00:00:00");
+    const days=Math.max(0,Math.ceil((date-today)/86400000));
+    const ceil=Math.max(0,Number(t.ceiling||0));
+    cumulative+=ceil;
+    const deficit=Math.max(0,cumulative-initial);
+    const rawRequired=days>0?deficit/days:(deficit>0?Infinity:0);
+    rows.push({t,date,days,cumulative,ceil,deficit,rawRequired});
+  }
+  return rows;
+}
 
-  const result=simulate(rate);
+function isGlobalDailyCapFeasible(rows,initial,rate){
+  if(!rows.length || !Number.isFinite(rate) || rate<0)return false;
+  for(const r of rows){
+    if(initial + rate*r.days + 1e-9 < r.cumulative)return false;
+  }
+  return true;
+}
 
+function findGlobalMinimumDailyCap(rows,initial){
+  if(!rows.length)return 0;
+  if(!isGlobalDailyCapFeasible(rows,initial,0)){
+    let high=1;
+    while(high<1000000000 && !isGlobalDailyCapFeasible(rows,initial,high))high*=2;
+    if(!isGlobalDailyCapFeasible(rows,initial,high))return Infinity;
+    let low=0;
+    while(low+1<high){
+      const mid=Math.floor((low+high)/2);
+      if(isGlobalDailyCapFeasible(rows,initial,mid))high=mid;
+      else low=mid;
+    }
+    return high;
+  }
+  return 0;
+}
+
+function simulateGlobalMinimumPlan(list,initial,today,rate){
+  let balance=initial;
+  let previous=today;
+  return list.map(t=>{
+    const date=new Date(t.date+"T00:00:00");
+    const days=Math.max(0,Math.ceil((date-previous)/86400000));
+    const earned=rate*days;
+    const before=balance+earned;
+    const ceil=Math.max(0,Number(t.ceiling||0));
+    const after=before-ceil;
+    const row={t,date,days,earned,before,ceil,after:Math.max(0,after)};
+    balance=Math.max(0,after);
+    previous=date;
+    return row;
+  });
+}
+
+function verifyGlobalMinimum(rows,initial,rate,maxDaily){
+  if(!Number.isFinite(rate)||rate<0)return {ok:false,reason:'必要量が有限の数として求まりません。'};
+  if(maxDaily>0 && rate>maxDaily)return {ok:true,reason:'計算自体は成立するが、設定上限を超えています。'};
+  if(!isGlobalDailyCapFeasible(rows,initial,rate))return {ok:false,reason:'この日量では締切に間に合いません。'};
+  if(rate>0 && isGlobalDailyCapFeasible(rows,initial,rate-1))return {ok:false,reason:'さらに1個/日少なくできてしまいます。'};
+  return {ok:true};
+}
+
+function renderAllTargetPlan(cur){
+  const box=$("allTargetPlan");
+  const list=targets.filter(t=>t.date && Number(t.ceiling||0)>0).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const maxDaily=Math.max(0,Number(settings.maxDaily||0));
+  const mode=settings.planMode||"zero";
+  if(!list.length){box.innerHTML='<div class="note">実装日と天井クリスタルを設定すると、全カードを取るための連続計画が表示されます。</div>';return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const initial=Math.max(0,Number(cur||0));
   let html='';
 
-
-  html+=`
-
-<div class="totalBox">
-
-<div>
-🎯 全カードを考慮した最小必要獲得量
-</div>
-
-<div class="big">
-${fmt(rate)} 個/日
-</div>
-
-<div class="note" style="color:#fff">
-
-途中のカードでクリスタルを余らせてもOKとして、
-その余りを後のカードへ繰り越した場合の
-「全カードを期限内に取れる最低値」です。
-
-</div>
-
-</div>
-
-`;
-
-
-  if(
-   max>0 &&
-   rate>max
-  ){
-
-   html+=`
-
-<div class="planAlert">
-
-⚠️
-
-必要なのは
-<strong>${fmt(rate)}個/日</strong>です。
-
-設定した最高獲得量は
-<strong>${fmt(max)}個/日</strong>
-なので、この条件では間に合いません。
-
-</div>
-
-`;
-
+  if(mode==="constant"){
+    box.innerHTML=renderConstantPlan(list,cur,today,maxDaily);
+    return;
   }
 
-
-  /*
-    各カードの詳細
-  */
-
-  result.rows.forEach((r,i)=>{
-
-   html+=`
-
-<div class="planMain">
-
-<div style="
-font-size:18px;
-margin-bottom:14px;
-">
-
-🎯 ${esc(r.t.name||'名前未設定')}
-
-</div>
-
-
-<div class="summaryGrid">
-
-
-<div>
-<span>実装日</span>
-<b>${esc(r.t.date)}</b>
-</div>
-
-
-<div>
-<span>この期間</span>
-<b>${fmt(r.days)}日</b>
-</div>
-
-
-<div>
-<span>天井</span>
-<b>${fmt(r.ceiling)}個</b>
-</div>
-
-
-<div>
-<span>前のカード後の繰越</span>
-<b>${fmt(r.startBalance)}個</b>
-</div>
-
-
-<div>
-<span>この期間の獲得</span>
-<b>+${fmt(r.earned)}個</b>
-</div>
-
-
-<div>
-<span>取得直前</span>
-<b>${fmt(r.beforeGet)}個</b>
-</div>
-
-
-</div>
-
-
-<div style="
-margin-top:14px;
-padding:14px;
-background:#fff;
-border-radius:10px;
-line-height:1.9;
-">
-
-<strong>📊 このカードの処理</strong>
-
-<br><br>
-
-${fmt(r.startBalance)}個
-
-＋ ${fmt(r.earned)}個
-
-＝
-
-<strong>
-${fmt(r.beforeGet)}個
-</strong>
-
-<br>
-
-− ${fmt(r.ceiling)}個
-（天井消費）
-
-<br>
-
-＝
-
-<strong>
-${fmt(r.after)}個
-</strong>
-
-（次のカードへ繰越）
-
-</div>
-
-
-${
-r.after>0
-?`
-
-<div class="planGood">
-
-💰
-
-このカードでは
-<strong>${fmt(r.after)}個</strong>
-余ります。
-
-<br>
-
-この余りは次のカードの資金として
-そのまま使われます。
-
-</div>
-
-`
-:''
-}
-
-
-</div>
-
-`;
-
-  });
-
-
-  html+=`
-
-<div class="summaryBox">
-
-<div class="summaryTitle">
-🏁 最終結果
-</div>
-
-
-<div class="summaryGrid">
-
-
-<div>
-<span>最小1日獲得量</span>
-<b>${fmt(rate)}個</b>
-</div>
-
-
-<div>
-<span>全期間の獲得量</span>
-<b>${fmt(result.totalEarned)}個</b>
-</div>
-
-
-<div>
-<span>最後のカード取得後</span>
-<b>${fmt(result.finalBalance)}個</b>
-</div>
-
-
-</div>
-
-
-<div class="planGood">
-
-✅
-
-<strong>
-全カードを順番に考慮して計算しています。
-</strong>
-
-<br><br>
-
-カード①をぴったりにするのではなく、
-カード①で余った分をカード②へ、
-カード②で余った分をカード③へ、
-という形で最後まで繰り越します。
-
-</div>
-
-</div>
-
-`;
-
-
-  box.innerHTML=html;
-
-  return;
-
- }
-
-
-
- /* =====================================================
-    constant
- ===================================================== */
-
- if(mode==='constant'){
-
-  const rate=findMinimumConstantRate();
-
-
-  if(!Number.isFinite(rate)){
-
-   box.innerHTML=`
-
-<div class="planAlert">
-
-⚠️
-一定の1日獲得量では計算できません。
-
-</div>
-
-`;
-
-   return;
-
-  }
-
-
-  const result=simulate(rate);
-
-  let html=`
-
-
-<div class="totalBox">
-
-<div>
-🎯 全期間で毎日同じ量にする場合
-</div>
-
-<div class="big">
-${fmt(rate)} 個/日
-</div>
-
-<div class="note" style="color:#fff">
-
-全カードを期限内に取得できる
-最低の一定ペースです。
-
-</div>
-
-</div>
-
-`;
-
-
-  if(
-   max>0 &&
-   rate>max
-  ){
-
-   html+=`
-
-<div class="planAlert">
-
-⚠️
-
-必要な獲得量は
-<strong>${fmt(rate)}個/日</strong>です。
-
-最高設定の
-<strong>${fmt(max)}個/日</strong>
-では間に合いません。
-
-</div>
-
-`;
-
-  }
-
-
-  result.rows.forEach(r=>{
-
-   html+=`
-
-<div class="planMain">
-
-<div style="
-font-size:18px;
-margin-bottom:12px;
-">
-
-🎯 ${esc(r.t.name||'名前未設定')}
-
-</div>
-
-
-<div class="summaryGrid">
-
-
-<div>
-<span>実装日</span>
-<b>${esc(r.t.date)}</b>
-</div>
-
-
-<div>
-<span>期間</span>
-<b>${fmt(r.days)}日</b>
-</div>
-
-
-<div>
-<span>天井</span>
-<b>${fmt(r.ceiling)}個</b>
-</div>
-
-
-<div>
-<span>前カード後</span>
-<b>${fmt(r.startBalance)}個</b>
-</div>
-
-
-<div>
-<span>期間中の獲得</span>
-<b>+${fmt(r.earned)}個</b>
-</div>
-
-
-<div>
-<span>取得直前</span>
-<b>${fmt(r.beforeGet)}個</b>
-</div>
-
-
-</div>
-
-
-<div style="
-margin-top:14px;
-padding:12px;
-background:#fff;
-border-radius:10px;
-line-height:1.8;
-">
-
-− ${fmt(r.ceiling)}個
-（天井消費）
-
-<br>
-
-<strong>
-取得後の繰越：
-${fmt(r.after)}個
-</strong>
-
-</div>
-
-
-${
-r.after>0
-?`
-
-<div class="planGood">
-
-💰
-<strong>${fmt(r.after)}個</strong>
-を次のカードへ繰り越します。
-
-</div>
-
-`
-:''
-}
-
-
-</div>
-
-`;
-
-  });
-
-
-  box.innerHTML=html;
-
-  return;
-
- }
-
-}
-
-
-
-/* =====================================================
-   記録一覧
-===================================================== */
-
-function renderRecords(){
-
- const tb=$('records');
-
- tb.innerHTML='';
-
- const r=sortedRecords();
-
-
- if(!r.length){
-
-  tb.innerHTML=
-   '<tr><td colspan="4" class="muted">まだ記録がありません。</td></tr>';
-
-  return;
-
- }
-
-
- r.slice().reverse().forEach(x=>{
-
-  const idx=
-   data.records.indexOf(x);
-
-  const pos=
-   r.indexOf(x);
-
-  const prev=
-   r[pos-1];
-
-  const diff=
-   prev
-    ?Number(x.crystals)-
-     Number(prev.crystals)
-    :null;
-
-
-  const tr=
-   document.createElement('tr');
-
-
-  tr.innerHTML=`
-
-<td>${x.date}</td>
-
-<td>${fmt(x.crystals)}</td>
-
-<td>
-${
- diff===null
-  ?'—'
-  :(diff>=0?'+':'')+
-   fmt(diff)
-}
-</td>
-
-<td>
-
-<button
-class="btn sub"
-onclick="editRecord(${idx})">
-編集
-</button>
-
-<button
-class="btn danger"
-onclick="deleteRecord(${idx})">
-削除
-</button>
-
-</td>
-
-`;
-
-  tb.appendChild(tr);
-
- });
-
-}
-
-
-
-window.editRecord=i=>{
-
- const r=data.records[i];
-
- if(!r)return;
-
- $('recordDate').value=r.date;
-
- $('current').value=r.crystals;
-
- editingIndex=i;
-
- $('record').textContent=
-  'この記録を更新';
-
- $('cancelEdit')
-  .classList.remove('hidden');
-
-};
-
-
-window.deleteRecord=i=>{
-
- if(!confirm(
-  'この記録を削除しますか？'
- ))
-  return;
-
- data.records.splice(i,1);
-
- if(editingIndex===i)
-  cancelEdit();
-
- save();
-
- update();
-
-};
-
-
-function cancelEdit(){
-
- editingIndex=null;
-
- $('recordDate').value=
-  todayStr();
-
- $('current').value='';
-
- $('record').textContent=
-  'この日付の記録を保存';
-
- $('cancelEdit')
-  .classList.add('hidden');
-
-}
-
-
-$('cancelEdit').onclick=
- cancelEdit;
-
-
-$('record').onclick=()=>{
-
- const date=
-  $('recordDate').value;
-
- const cr=
-  Number($('current').value);
-
-
- if(
-  !date||
-  !Number.isFinite(cr)||
-  cr<0
- ){
-
-  alert(
-   '日付と0以上のクリスタル数を入力してください。'
-  );
-
-  return;
-
- }
-
-
- const duplicate=
-  data.records.findIndex(
-   (r,i)=>
-    r.date===date&&
-    i!==editingIndex
-  );
-
-
- if(duplicate>=0){
-
-  alert(
-   'その日付の記録はすでにあります。編集で変更してください。'
-  );
-
-  return;
-
- }
-
-
- if(editingIndex===null){
-
-  data.records.push({
-   date:date,
-   crystals:Math.floor(cr)
-  });
-
- }else{
-
-  data.records[editingIndex]={
-   date:date,
-   crystals:Math.floor(cr)
-  };
-
- }
-
-
- cancelEdit();
-
- save();
-
- update();
-
-};
-
-
-
-/* =====================================================
-   カード追加
-===================================================== */
-
-$('addTarget').onclick=()=>{
-
- data.targets.push({
-
-  id:Date.now()+Math.random(),
-
-  name:'',
-
-  date:'',
-
-  ceiling:90000
-
- });
-
- save();
-
- renderTargets();
-
- update();
-
-};
-
-
-
-/* =====================================================
-   計算設定
-===================================================== */
-
-$('planMode').onchange=e=>{
-
- data.planMode=
-  e.target.value;
-
- save();
-
- update();
-
-};
-
-
-$('maxDaily').oninput=e=>{
-
- data.maxDaily=
-  Math.max(
-   0,
-   Number(e.target.value||0)
-  );
-
- save();
-
- update();
-
-};
-
-
-
-/* =====================================================
-   グラフ
-===================================================== */
-
-function drawChart(){
-
- const c=$('chart');
-
- const ctx=c.getContext('2d');
-
- const W=c.width;
-
- const H=c.height;
-
- ctx.clearRect(
-  0,
-  0,
-  W,
-  H
- );
-
-
- const r=sortedRecords();
-
-
- if(!r.length){
-
-  ctx.fillStyle='#888';
-
-  ctx.font='14px sans-serif';
-
-  ctx.fillText(
-   'クリスタルを記録するとグラフが表示されます',
-   W/2-150,
-   H/2
-  );
-
-  return;
-
- }
-
-
- const max=
-  Math.max(
-   1,
-   ...r.map(
-    x=>Number(x.crystals)
-   ),
-   ...data.targets.map(
-    x=>Number(x.ceiling||0)
-   )
-  );
-
-
- const p={
-  l:55,
-  r:15,
-  t:20,
-  b:35
- };
-
-
- ctx.strokeStyle='#ddd';
-
-
- for(let i=0;i<=4;i++){
-
-  const y=
-   p.t+
-   (H-p.t-p.b)*i/4;
-
-  ctx.beginPath();
-
-  ctx.moveTo(p.l,y);
-
-  ctx.lineTo(
-   W-p.r,
-   y
-  );
-
-  ctx.stroke();
-
-  ctx.fillStyle='#777';
-
-  ctx.font='11px sans-serif';
-
-  ctx.fillText(
-   fmt(
-    Math.round(
-     max*(4-i)/4
-    )
-   ),
-   5,
-   y+4
-  );
-
- }
-
-
- const X=i=>
-  r.length===1
-   ?W/2
-   :p.l+
-    (W-p.l-p.r)*
-    i/(r.length-1);
-
-
- const Y=v=>
-  H-p.b-
-  (H-p.t-p.b)*
-  v/max;
-
-
- ctx.strokeStyle='#6c63ff';
-
- ctx.lineWidth=3;
-
- ctx.beginPath();
-
-
- r.forEach((x,i)=>{
-
-  const xx=X(i);
-
-  const yy=Y(
-   x.crystals
-  );
-
-  if(i)
-   ctx.lineTo(
-    xx,
-    yy
-   );
-  else
-   ctx.moveTo(
-    xx,
-    yy
-   );
-
- });
-
-
- ctx.stroke();
-
-
- ctx.fillStyle='#6c63ff';
-
-
- r.forEach((x,i)=>{
-
-  ctx.beginPath();
-
-  ctx.arc(
-   X(i),
-   Y(x.crystals),
-   4,
-   0,
-   Math.PI*2
-  );
-
-  ctx.fill();
-
- });
-
-}
-
-
-
-/* =====================================================
-   全体更新
-===================================================== */
-
-function update(){
-
- $('planMode').value=
-  data.planMode||'minimum';
-
- $('maxDaily').value=
-  data.maxDaily||'';
-
- renderSummary();
-
- renderPlan();
-
- renderRecords();
-
- drawChart();
-
-}
-
-
-
-/* =====================================================
-   CSV
-===================================================== */
-
-$('exportCsv').onclick=()=>{
-
- const rows=[
-  ['date','crystals'],
-  ...sortedRecords().map(
-   r=>[
-    r.date,
-    r.crystals
-   ]
-  )
- ];
-
-
- const csv=
-  '\uFEFF'+
-  rows
-   .map(a=>a.join(','))
-   .join('\n');
-
-
- const blob=
-  new Blob(
-   [csv],
-   {
-    type:'text/csv;charset=utf-8'
-   }
-  );
-
-
- const a=
-  document.createElement('a');
-
- a.href=
-  URL.createObjectURL(blob);
-
- a.download=
-  'proseka_crystals.csv';
-
- a.click();
-
- URL.revokeObjectURL(
-  a.href
- );
-
-};
-
-
-
-$('importCsv').onchange=e=>{
-
- const f=e.target.files[0];
-
- if(!f)return;
-
- const rd=
-  new FileReader();
-
-
- rd.onload=()=>{
-
-  const lines=
-   String(rd.result)
-    .replace(/^\uFEFF/,'')
-    .trim()
-    .split(/\r?\n/);
-
-
-  const imported=[];
-
-
-  for(
-   let i=1;
-   i<lines.length;
-   i++
-  ){
-
-   const [
-    date,
-    cr
-   ]=
-    lines[i].split(',');
-
-
-   if(
-    /^\d{4}-\d{2}-\d{2}$/.test(date)&&
-    Number.isFinite(Number(cr))
-   ){
-
-    imported.push({
-     date:date,
-     crystals:Number(cr)
-    });
-
-   }
-
-  }
-
-
-  if(imported.length){
-
-   data.records=
-    imported;
-
-   save();
-
-   update();
-
-   alert(
-    imported.length+
-    '件読み込みました。'
-   );
-
-  }else{
-
-   alert(
-    '読み込める記録がありません。'
-   );
-
-  }
-
- };
-
-
- rd.readAsText(
-  f,
-  'utf-8'
- );
-
- e.target.value='';
-
-};
-
-
-
-/* =====================================================
-   リセット
-===================================================== */
-
-$('resetAll').onclick=async()=>{
-
- if(!confirm(
-  '本当にすべてリセットしますか？'
- ))
-  return;
-
-
- localStorage.removeItem(KEY);
-
-
- data={
-  targets:[
-   {
-    id:Date.now(),
-    name:'',
-    date:'',
-    ceiling:90000
-   }
-  ],
-  records:[],
-  planMode:'minimum',
-  maxDaily:0
- };
-
-
- try{
-
-  const db=await openDB();
-
-  const tx=
-   db.transaction(
-    'images',
-    'readwrite'
-   );
-
-  tx.objectStore('images')
-   .clear();
-
- }catch(e){}
-
-
- renderTargets();
-
- update();
-
-};
-
-
-
-/* =====================================================
-   起動
-===================================================== */
-
-$('recordDate').value=
- todayStr();
-
-renderTargets();
-
-update();
-
-
-/* =====================================================
-   Service Worker
-===================================================== */
-
-if(
- 'serviceWorker' in navigator &&
- location.protocol==='https:'
-){
-
- navigator.serviceWorker
-  .register('./sw.js')
-  .catch(()=>{});
-
-}
-
-</script>
-
-</body>
-</html>
+  if(mode==="minimum"){
+    const globalRows=buildGlobalDeadlineRows(list,initial,today);
+    const optimal=findGlobalMinimumDailyCap(globalRows,initial);
+    const verification=verifyGlobalMinimum(globalRows,initial,optimal,maxDaily);
+
+    if(!Number.isFinite(optimal)){
+      html+='<div class="planAlert">⚠️ 現在のクリスタルでは、実装済み・当日実装のカードを含めて期限までに全カードを取れません。まず現在の所持数を確認してください。</div>';
+      html+='<div class="planMain">必要獲得量/日<br><b>計算不能</b></div>';
+      box.innerHTML=html;
+      return;
+    }
+
+    if(maxDaily>0 && optimal>maxDaily){
+      html+='<div class="planAlert">⚠️ 全カードに間に合わせるための最小値は <b>'+fmt(optimal)+'個/日</b> です。設定した上限 <b>'+fmt(maxDaily)+'個/日</b> を超えています。</div>';
+    }else if(verification.ok){
+      html+='<div class="planGood">✅ 検算OK：カード取得後の余りを次のカードへ繰り越した上で、<b>'+fmt(optimal)+'個/日</b>が全体の最小値です。</div>';
+    }else{
+      html+='<div class="planAlert">⚠️ 計算結果の検算に失敗しました。条件を確認してください。</div>';
+    }
+
+    const planRows=simulateGlobalMinimumPlan(list,initial,today,optimal);
+    const bottleneck=globalRows.slice().sort((a,b)=>b.rawRequired-a.rawRequired)[0];
+
+    html+='<div class="planMain">全カードを取るための「1日あたり最大必要量」の最小値<br><b>'+fmt(optimal)+'個/日</b>'
+      +(maxDaily>0?' <span class="note">（設定上限：'+fmt(maxDaily)+'個/
