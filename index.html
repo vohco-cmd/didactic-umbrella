@@ -330,7 +330,6 @@ canvas{
 <button class="btn" id="addTarget">＋ 欲しいカードを追加</button>
 </section>
 
-
 <section class="card">
 
 <h2>② 今日のクリスタル</h2>
@@ -360,7 +359,6 @@ canvas{
 
 </section>
 
-
 <section class="card">
 
 <h2>③ 必要獲得量の計算</h2>
@@ -378,7 +376,7 @@ canvas{
 </option>
 
 <option value="minimum">
-1日あたり必要量を最小にする
+全カードを考慮して1日あたり必要量を最小にする
 </option>
 
 <option value="constant">
@@ -388,7 +386,6 @@ canvas{
 </select>
 
 </div>
-
 
 <div class="field">
 
@@ -410,7 +407,6 @@ placeholder="例：1000"
 
 </section>
 
-
 <section class="card">
 
 <h2>④ 現在の状況</h2>
@@ -418,7 +414,6 @@ placeholder="例：1000"
 <div id="summary"></div>
 
 </section>
-
 
 <section class="card">
 
@@ -431,7 +426,6 @@ height="280">
 </canvas>
 
 </section>
-
 
 <section class="card">
 
@@ -483,7 +477,6 @@ accept=".csv,text/csv"
 
 </section>
 
-
 <section class="card">
 
 <h2>⑦ データをリセット</h2>
@@ -501,7 +494,6 @@ id="resetAll">
 </section>
 
 </main>
-
 
 <script>
 
@@ -530,7 +522,7 @@ JSON.parse(localStorage.getItem(KEY)||'null')
   }
  ],
  records:[],
- planMode:'zero',
+ planMode:'minimum',
  maxDaily:0
 };
 
@@ -697,7 +689,6 @@ onclick="removeTarget(${i})">
 
 </div>
 
-
 <div
 class="grid"
 style="margin-top:10px"
@@ -715,7 +706,6 @@ placeholder="例：初音ミク ○○カード"
 
 </div>
 
-
 <div class="field">
 
 <label>実装日</label>
@@ -727,7 +717,6 @@ onchange="changeTarget(${i},'date',this.value)"
 >
 
 </div>
-
 
 <div class="field">
 
@@ -743,7 +732,6 @@ oninput="changeTarget(${i},'ceiling',this.value)"
 </div>
 
 </div>
-
 
 <div class="actions">
 
@@ -761,7 +749,6 @@ onchange="addPhotos(${i},this.files)"
 
 </label>
 
-
 <button
 class="btn sub"
 onclick="deleteAllPhotos(${i})">
@@ -769,7 +756,6 @@ onclick="deleteAllPhotos(${i})">
 </button>
 
 </div>
-
 
 <div
 class="photoGrid"
@@ -1077,46 +1063,23 @@ window.deleteAllPhotos=async i=>{
 
 
 /* =====================================================
-   ★★★ 新しい計算エンジン ★★★
-   
-   「カードを順番に取得する」
-   ことを前提にしている。
-   
-   現在の残高
-        ↓
-   カード①まで貯める
-        ↓
-   カード①を購入
-        ↓
-   残った分をカード②へ
-        ↓
-   カード②まで貯める
-        ↓
-   カード②を購入
+   計算エンジン
 ===================================================== */
 
-
 /*
-  指定した1日獲得量でシミュレーションする。
+  rate = 1日あたり獲得するクリスタル
 
-  重要なのは、
-
-  balance = 現在の残高
-
-  ↓
-
-  実装日までに rate × 日数 を加算
-
-  ↓
-
-  天井分を消費
-
-  ↓
-
-  残ったbalanceを次のカードへ
-
-  とすること。
+  現在の残高
+      ↓
+  カード①までrate×日数を獲得
+      ↓
+  カード①の天井を消費
+      ↓
+  残りをカード②へ
+      ↓
+  ...
 */
+
 
 function simulate(rate){
 
@@ -1127,7 +1090,6 @@ function simulate(rate){
  let previousDate=todayStr();
 
  let totalEarned=0;
-
  let totalSpent=0;
 
  const rows=[];
@@ -1135,31 +1097,28 @@ function simulate(rate){
 
  for(const t of list){
 
-  const ceiling=
-   Math.max(
-    0,
-    Number(t.ceiling||0)
-   );
-
-
-  let d=
-   daysBetween(
-    previousDate,
-    t.date
-   );
+  const ceiling=Math.max(
+   0,
+   Number(t.ceiling||0)
+  );
 
 
   /*
-    実装済みカードについては
-    その日までの獲得を追加しない。
+    過去の日付は0日として扱う。
   */
 
-  const validDays=Math.max(0,d);
+  const days=Math.max(
+   0,
+   daysBetween(
+    previousDate,
+    t.date
+   )
+  );
 
 
   const earned=
    Number.isFinite(rate)
-    ?rate*validDays
+    ?rate*days
     :0;
 
 
@@ -1167,28 +1126,23 @@ function simulate(rate){
    balance+earned;
 
 
-  /*
-    このカードを確実に取得するために
-    必要なクリスタル。
+  const shortfall=Math.max(
+   0,
+   ceiling-beforeGet
+  );
 
-    ここでは「カードを取る」
-    = 天井分を消費
-  */
 
-  const shortfall=
-   Math.max(
-    0,
-    ceiling-beforeGet
-   );
+  const possible=
+   beforeGet>=ceiling;
 
 
   /*
-    rateが十分なら、
-    残ったクリスタルをそのまま次へ。
+    取れる場合は天井分を消費。
+    余った分はそのまま次へ。
   */
 
   const after=
-   beforeGet>=ceiling
+   possible
     ?beforeGet-ceiling
     :0;
 
@@ -1196,36 +1150,26 @@ function simulate(rate){
   rows.push({
 
    t:t,
-
-   days:d,
-
+   days:days,
    ceiling:ceiling,
-
    startBalance:balance,
-
    earned:earned,
-
    beforeGet:beforeGet,
-
    shortfall:shortfall,
-
-   after:after
+   after:after,
+   possible:possible
 
   });
 
 
   totalEarned+=earned;
 
-  if(beforeGet>=ceiling){
+
+  if(possible){
 
    totalSpent+=ceiling;
 
   }else{
-
-   /*
-     足りなかった場合でも、
-     実際に持っている分を消費した扱い。
-   */
 
    totalSpent+=beforeGet;
 
@@ -1242,11 +1186,8 @@ function simulate(rate){
  return {
 
   rows:rows,
-
   finalBalance:balance,
-
   totalEarned:totalEarned,
-
   totalSpent:totalSpent
 
  };
@@ -1255,24 +1196,25 @@ function simulate(rate){
 
 
 
-/*
-  「カードを全部間に合わせるために必要な
-   毎日の一定獲得量」を求める。
+/* =====================================================
+   全カードを期限内に取れるか
+===================================================== */
 
-  単純にカードごとの必要量を割るのではなく、
+function isSimulationPossible(rate){
 
-  1日量を仮定
-      ↓
-  カード①取得
-      ↓
-  残高を繰り越す
-      ↓
-  カード②取得
-      ↓
-  ...
-  
-  と最後までシミュレーションする。
-*/
+ const result=simulate(rate);
+
+ return result.rows.every(
+  r=>r.possible
+ );
+
+}
+
+
+
+/* =====================================================
+   全カードを考慮した最低1日量
+===================================================== */
 
 function findMinimumConstantRate(){
 
@@ -1283,19 +1225,26 @@ function findMinimumConstantRate(){
 
 
  /*
-   実装日が今日以前で、
-   現在のクリスタルだけでは足りない場合は
-   1日量だけでは解決できない。
+   最初のカードが今日より前の場合、
+   そのカードまでの日数は0。
+
+   現在の残高で足りないなら、
+   今日からの獲得だけでは間に合わない。
  */
 
  const first=list[0];
 
- if(
+ const firstDays=
   daysBetween(
    todayStr(),
    first.date
-  )<=0 &&
-  currentCrystals()<Number(first.ceiling||0)
+  );
+
+
+ if(
+  firstDays<0 &&
+  currentCrystals()<
+   Number(first.ceiling||0)
  ){
 
   return Infinity;
@@ -1304,19 +1253,16 @@ function findMinimumConstantRate(){
 
 
  /*
-   上限を探す
+   まず間に合う上限を探す。
  */
 
  let low=0;
-
  let high=1;
 
 
  while(
-  high<1000000 &&
-  !isSimulationPossible(
-   high
-  )
+  high<100000000 &&
+  !isSimulationPossible(high)
  ){
 
   high*=2;
@@ -1324,8 +1270,10 @@ function findMinimumConstantRate(){
  }
 
 
- if(high>=1000000 &&
-    !isSimulationPossible(high)){
+ if(
+  high>=100000000 &&
+  !isSimulationPossible(high)
+ ){
 
   return Infinity;
 
@@ -1333,16 +1281,18 @@ function findMinimumConstantRate(){
 
 
  /*
-   1個/日単位で二分探索。
+   1日量を二分探索。
 
-   「全カードを期限までに取れるか」
-   を基準にする。
+   ここで全カードを同時に判定するため、
+
+   「①を少し余らせて②を楽にする」
+
+   という繰り越しも自動的に考慮される。
  */
 
- for(let i=0;i<40;i++){
+ for(let i=0;i<60;i++){
 
-  const mid=
-   (low+high)/2;
+  const mid=(low+high)/2;
 
   if(
    isSimulationPossible(mid)
@@ -1364,36 +1314,9 @@ function findMinimumConstantRate(){
 }
 
 
-function isSimulationPossible(rate){
-
- const result=
-  simulate(rate);
-
- return result.rows.every(
-  r=>r.beforeGet>=r.ceiling
- );
-
-}
-
-
 
 /* =====================================================
-   カードごとの必要量
-===================================================== */
-
-function calculateSequential(rate){
-
- const result=
-  simulate(rate);
-
- return result.rows;
-
-}
-
-
-
-/* =====================================================
-   現在の状況
+   ④ 現在の状況
 ===================================================== */
 
 function renderSummary(){
@@ -1420,8 +1343,8 @@ function renderSummary(){
 
 
  /*
-   「現在の残高からカードを順番に取得する」
-   という考え方で表示。
+   現在の残高だけを基準に、
+   カードを順番に見ていく。
  */
 
  let balance=cur;
@@ -1431,50 +1354,48 @@ function renderSummary(){
 
  list.forEach((t,index)=>{
 
-  const ceiling=
-   Number(t.ceiling||0);
+  const ceiling=Math.max(
+   0,
+   Number(t.ceiling||0)
+  );
 
-  const d=
+
+  const daysToCard=
    daysBetween(
-    previousDate,
+    todayStr(),
     t.date
    );
 
 
-  /*
-    現在の状況では、
-    未来のカードについて
-    今の残高だけを使った場合の不足量を表示。
+  const intervalDays=Math.max(
+   0,
+   daysBetween(
+    previousDate,
+    t.date
+   )
+  );
 
-    前カードを取得した後は、
-    その残高を次のカードに繰り越す。
-  */
 
-  const need=
-   Math.max(
-    0,
-    ceiling-balance
-   );
+  const needNow=Math.max(
+   0,
+   ceiling-balance
+  );
 
 
   const dailyNeed=
-   d>0
-    ?Math.ceil(need/d)
-    :(need>0?Infinity:0);
+   intervalDays>0
+    ?Math.ceil(needNow/intervalDays)
+    :(needNow>0?Infinity:0);
 
 
   /*
-    「カードを取るために必要な量」
-    だけを貯めた場合の残高。
-
-    余った分は次へ繰り越す。
+    現在残高だけで引いた場合。
   */
 
-  const after=
-   Math.max(
-    0,
-    balance+need-ceiling
-   );
+  const afterNow=Math.max(
+   0,
+   balance-ceiling
+  );
 
 
   const rate=
@@ -1512,51 +1433,36 @@ function renderSummary(){
 
 <div>
 <span>実装まで</span>
-
 <b>
 ${
- d<0
+ daysToCard<0
   ?'実装済み'
-  :fmt(d)+'日'
+  :fmt(daysToCard)+'日'
 }
 </b>
-
 </div>
 
 
 <div>
 <span>天井</span>
-
-<b>
-${fmt(ceiling)}個
-</b>
-
+<b>${fmt(ceiling)}個</b>
 </div>
 
 
 <div>
-<span>現在の繰越残高</span>
-
-<b>
-${fmt(balance)}個
-</b>
-
+<span>現在の繰越</span>
+<b>${fmt(balance)}個</b>
 </div>
 
 
 <div>
-<span>このカードに必要</span>
-
-<b>
-${fmt(need)}個
-</b>
-
+<span>現在の不足分</span>
+<b>${fmt(needNow)}個</b>
 </div>
 
 
 <div>
-<span>必要獲得量/日</span>
-
+<span>不足分を貯める場合</span>
 <b>
 ${
  dailyNeed===Infinity
@@ -1564,23 +1470,17 @@ ${
   :fmt(dailyNeed)+'個/日'
 }
 </b>
-
 </div>
 
 
 <div>
-<span>取得後の繰越</span>
-
-<b>
-${fmt(after)}個
-</b>
-
+<span>取得後の残高</span>
+<b>${fmt(afterNow)}個</b>
 </div>
 
 
 <div>
 <span>現在の獲得ペース</span>
-
 <b>
 ${
  daily===null
@@ -1590,7 +1490,6 @@ ${
    '個/日'
 }
 </b>
-
 </div>
 
 
@@ -1611,11 +1510,7 @@ style="width:${rate}%">
   box.appendChild(e);
 
 
-  /*
-    次のカードへ残高を繰り越す
-  */
-
-  balance=after;
+  balance=afterNow;
 
   previousDate=t.date;
 
@@ -1626,7 +1521,7 @@ style="width:${rate}%">
 
 
 /* =====================================================
-   必要獲得量
+   ③ 必要獲得量
 ===================================================== */
 
 function renderPlan(){
@@ -1635,13 +1530,12 @@ function renderPlan(){
 
  const list=sortedTargets();
 
- const mode=data.planMode||'zero';
+ const mode=data.planMode||'minimum';
 
- const max=
-  Math.max(
-   0,
-   Number(data.maxDaily||0)
-  );
+ const max=Math.max(
+  0,
+  Number(data.maxDaily||0)
+ );
 
 
  if(!list.length){
@@ -1655,7 +1549,7 @@ function renderPlan(){
 
 
  /* =====================================================
-    カードごとに必要量を出すモード
+    zero
  ===================================================== */
 
  if(mode==='zero'){
@@ -1668,59 +1562,39 @@ function renderPlan(){
 
   let totalNeed=0;
 
-  let totalSpent=0;
+
+  for(const t of list){
+
+   const ceiling=Math.max(
+    0,
+    Number(t.ceiling||0)
+   );
 
 
-  for(let i=0;i<list.length;i++){
-
-   const t=list[i];
-
-   const ceiling=
-    Number(t.ceiling||0);
-
-   const d=
+   const days=Math.max(
+    0,
     daysBetween(
      previousDate,
      t.date
-    );
+    )
+   );
 
 
-   /*
-     このカードを取る時点で
-     今持っている分を使う。
-   */
-
-   const need=
-    Math.max(
-     0,
-     ceiling-balance
-    );
+   const need=Math.max(
+    0,
+    ceiling-balance
+   );
 
 
    const rate=
-    d>0
-     ?Math.ceil(need/d)
+    days>0
+     ?Math.ceil(need/days)
      :(need>0?Infinity:0);
 
 
-   /*
-     最高獲得量チェック
-   */
-
-   const possible=
-    max<=0 ||
-    rate<=max;
-
-
-   /*
-     「必要量だけ貯める」
-     ので、取得直前は
-     基本的に天井と同額。
-   */
-
    const earned=
     Number.isFinite(rate)
-     ?rate*Math.max(0,d)
+     ?rate*days
      :0;
 
 
@@ -1728,66 +1602,61 @@ function renderPlan(){
     balance+earned;
 
 
-   const after=
-    Math.max(
-     0,
-     beforeGet-ceiling
-    );
+   const after=Math.max(
+    0,
+    beforeGet-ceiling
+   );
 
 
    totalNeed+=need;
-
-   totalSpent+=ceiling;
 
 
    html+=`
 
 <div class="planMain">
 
-<b>
+<div style="font-size:18px;margin-bottom:12px">
+
 🎯 ${esc(t.name||'名前未設定')}
-</b>
 
-<br><br>
-
-
-実装日：
-<b>
-${esc(t.date)}
-</b>
-
-<br>
+</div>
 
 
-実装まで：
-<b>
-${
- d<0
-  ?'実装済み'
-  :fmt(d)+'日'
-}
-</b>
-
-<br><br>
+<div class="summaryGrid">
 
 
-前のカード取得後の残高：
-<b>
-${fmt(balance)}個
-</b>
-
-<br>
+<div>
+<span>実装日</span>
+<b>${esc(t.date)}</b>
+</div>
 
 
-このカードに必要：
-<b>
-${fmt(need)}個
-</b>
-
-<br>
+<div>
+<span>期間</span>
+<b>${fmt(days)}日</b>
+</div>
 
 
-必要獲得量：
+<div>
+<span>天井</span>
+<b>${fmt(ceiling)}個</b>
+</div>
+
+
+<div>
+<span>繰越</span>
+<b>${fmt(balance)}個</b>
+</div>
+
+
+<div>
+<span>追加で必要</span>
+<b>${fmt(need)}個</b>
+</div>
+
+
+<div>
+<span>必要量/日</span>
 <b>
 ${
  Number.isFinite(rate)
@@ -1795,80 +1664,57 @@ ${
   :'間に合いません'
 }
 </b>
+</div>
+
+
+</div>
+
+
+<div style="
+margin-top:14px;
+padding:12px;
+background:#fff;
+border-radius:10px;
+line-height:1.8;
+">
+
+${fmt(balance)}個
+＋ ${fmt(earned)}個
+＝ <strong>${fmt(beforeGet)}個</strong>
 
 <br>
 
-
-カード取得直前：
-<b>
-${fmt(beforeGet)}個
-</b>
+− ${fmt(ceiling)}個
 
 <br>
 
-
-天井消費：
-<b>
--${fmt(ceiling)}個
-</b>
+＝ <strong>${fmt(after)}個</strong>
 
 <br>
-
 
 <span class="note">
-
-取得後に次のカードへ繰り越す残高：
-
-<b>
-${fmt(after)}個
-</b>
-
+取得後、この残高を次のカードへ繰り越します。
 </span>
 
 </div>
 
-`;
+</div>
 
+`;
 
    balance=after;
 
    previousDate=t.date;
 
-
-   if(
-    max>0 &&
-    rate>max
-   ){
-
-    html+=`
-
-<div class="planAlert">
-
-⚠️
-このカードは、
-設定した最高${fmt(max)}個/日では
-実装日までに必要量を貯められません。
-
-</div>
-
-`;
-
-   }
-
   }
 
-
-  /*
-    ★合計表示
-  */
 
   html=`
 
 <div class="totalBox">
 
 <div>
-この順番でカードを全部取るために、
-これから必要な獲得量
+これから追加で必要なクリスタル
 </div>
 
 <div class="big">
@@ -1876,9 +1722,7 @@ ${fmt(totalNeed)} 個
 </div>
 
 <div class="note" style="color:#fff">
-
-カードごとの天井消費を順番に考慮しています。
-
+カードを順番に取得した場合の合計です。
 </div>
 
 </div>
@@ -1887,23 +1731,282 @@ ${fmt(totalNeed)} 個
   +html;
 
 
+  box.innerHTML=html;
+
+  return;
+
+ }
+
+
+
+ /* =====================================================
+    ★ minimum
+    全カードを考慮した最小1日量
+ ===================================================== */
+
+ if(mode==='minimum'){
+
+  const rate=findMinimumConstantRate();
+
+
+  if(!Number.isFinite(rate)){
+
+   box.innerHTML=`
+
+<div class="planAlert">
+
+⚠️
+
+現在のクリスタルとカードの実装日では、
+最初のカードまでに必要な量を
+計算できません。
+
+</div>
+
+`;
+
+   return;
+
+  }
+
+
+  const result=simulate(rate);
+
+  let html='';
+
+
   html+=`
+
+<div class="totalBox">
+
+<div>
+🎯 全カードを考慮した最小必要獲得量
+</div>
+
+<div class="big">
+${fmt(rate)} 個/日
+</div>
+
+<div class="note" style="color:#fff">
+
+途中のカードでクリスタルを余らせてもOKとして、
+その余りを後のカードへ繰り越した場合の
+「全カードを期限内に取れる最低値」です。
+
+</div>
+
+</div>
+
+`;
+
+
+  if(
+   max>0 &&
+   rate>max
+  ){
+
+   html+=`
+
+<div class="planAlert">
+
+⚠️
+
+必要なのは
+<strong>${fmt(rate)}個/日</strong>です。
+
+設定した最高獲得量は
+<strong>${fmt(max)}個/日</strong>
+なので、この条件では間に合いません。
+
+</div>
+
+`;
+
+  }
+
+
+  /*
+    各カードの詳細
+  */
+
+  result.rows.forEach((r,i)=>{
+
+   html+=`
+
+<div class="planMain">
+
+<div style="
+font-size:18px;
+margin-bottom:14px;
+">
+
+🎯 ${esc(r.t.name||'名前未設定')}
+
+</div>
+
+
+<div class="summaryGrid">
+
+
+<div>
+<span>実装日</span>
+<b>${esc(r.t.date)}</b>
+</div>
+
+
+<div>
+<span>この期間</span>
+<b>${fmt(r.days)}日</b>
+</div>
+
+
+<div>
+<span>天井</span>
+<b>${fmt(r.ceiling)}個</b>
+</div>
+
+
+<div>
+<span>前のカード後の繰越</span>
+<b>${fmt(r.startBalance)}個</b>
+</div>
+
+
+<div>
+<span>この期間の獲得</span>
+<b>+${fmt(r.earned)}個</b>
+</div>
+
+
+<div>
+<span>取得直前</span>
+<b>${fmt(r.beforeGet)}個</b>
+</div>
+
+
+</div>
+
+
+<div style="
+margin-top:14px;
+padding:14px;
+background:#fff;
+border-radius:10px;
+line-height:1.9;
+">
+
+<strong>📊 このカードの処理</strong>
+
+<br><br>
+
+${fmt(r.startBalance)}個
+
+＋ ${fmt(r.earned)}個
+
+＝
+
+<strong>
+${fmt(r.beforeGet)}個
+</strong>
+
+<br>
+
+− ${fmt(r.ceiling)}個
+（天井消費）
+
+<br>
+
+＝
+
+<strong>
+${fmt(r.after)}個
+</strong>
+
+（次のカードへ繰越）
+
+</div>
+
+
+${
+r.after>0
+?`
+
+<div class="planGood">
+
+💰
+
+このカードでは
+<strong>${fmt(r.after)}個</strong>
+余ります。
+
+<br>
+
+この余りは次のカードの資金として
+そのまま使われます。
+
+</div>
+
+`
+:''
+}
+
+
+</div>
+
+`;
+
+  });
+
+
+  html+=`
+
+<div class="summaryBox">
+
+<div class="summaryTitle">
+🏁 最終結果
+</div>
+
+
+<div class="summaryGrid">
+
+
+<div>
+<span>最小1日獲得量</span>
+<b>${fmt(rate)}個</b>
+</div>
+
+
+<div>
+<span>全期間の獲得量</span>
+<b>${fmt(result.totalEarned)}個</b>
+</div>
+
+
+<div>
+<span>最後のカード取得後</span>
+<b>${fmt(result.finalBalance)}個</b>
+</div>
+
+
+</div>
+
 
 <div class="planGood">
 
 ✅
-カード①を取得した後の残りを、
-カード②へ自動的に繰り越して計算しています。
+
+<strong>
+全カードを順番に考慮して計算しています。
+</strong>
 
 <br><br>
 
-つまり、
+カード①をぴったりにするのではなく、
+カード①で余った分をカード②へ、
+カード②で余った分をカード③へ、
+という形で最後まで繰り越します。
 
-「カード①の60,000個を貯める」
-→「60,000個使う」
-→「カード②の120,000個を貯める」
-
-という順番で計算しています。
+</div>
 
 </div>
 
@@ -1924,35 +2027,46 @@ ${fmt(totalNeed)} 個
 
  if(mode==='constant'){
 
-  const rate=
-   findMinimumConstantRate();
+  const rate=findMinimumConstantRate();
 
 
-  const result=
-   Number.isFinite(rate)
-    ?simulate(rate)
-    :null;
+  if(!Number.isFinite(rate)){
+
+   box.innerHTML=`
+
+<div class="planAlert">
+
+⚠️
+一定の1日獲得量では計算できません。
+
+</div>
+
+`;
+
+   return;
+
+  }
 
 
-  let html='';
+  const result=simulate(rate);
 
+  let html=`
 
-  html+=`
 
 <div class="totalBox">
 
 <div>
-全カードを実装日までに取るための
-毎日一定の獲得量
+🎯 全期間で毎日同じ量にする場合
 </div>
 
 <div class="big">
+${fmt(rate)} 個/日
+</div>
 
-${
- Number.isFinite(rate)
-  ?fmt(rate)+' 個/日'
-  :'計算できません'
-}
+<div class="note" style="color:#fff">
+
+全カードを期限内に取得できる
+最低の一定ペースです。
 
 </div>
 
@@ -1961,17 +2075,23 @@ ${
 `;
 
 
-  if(max>0&&
-     Number.isFinite(rate)&&
-     rate>max){
+  if(
+   max>0 &&
+   rate>max
+  ){
 
    html+=`
 
 <div class="planAlert">
 
 ⚠️
-必要な${fmt(rate)}個/日は、
-設定した最高${fmt(max)}個/日を超えています。
+
+必要な獲得量は
+<strong>${fmt(rate)}個/日</strong>です。
+
+最高設定の
+<strong>${fmt(max)}個/日</strong>
+では間に合いません。
 
 </div>
 
@@ -1980,267 +2100,107 @@ ${
   }
 
 
-  if(result){
-
-   result.rows.forEach((r,i)=>{
-
-    html+=`
-
-<div class="planMain">
-
-<b>
-🎯 ${esc(r.t.name||'名前未設定')}
-</b>
-
-<br><br>
-
-実装日：
-<b>${esc(r.t.date)}</b>
-
-<br>
-
-実装まで：
-<b>
-${r.days<0?'実装済み':fmt(r.days)+'日'}
-</b>
-
-<br><br>
-
-カード取得前の残高：
-<b>
-${fmt(r.startBalance)}個
-</b>
-
-<br>
-
-この期間の獲得：
-<b>
-+${fmt(r.earned)}個
-</b>
-
-<br>
-
-カード取得直前：
-<b>
-${fmt(r.beforeGet)}個
-</b>
-
-<br>
-
-天井消費：
-<b>
--${fmt(r.ceiling)}個
-</b>
-
-<br>
-
-取得後の残高：
-<b>
-${fmt(r.after)}個
-</b>
-
-</div>
-
-`;
-
-   });
-
-  }
-
-
-  box.innerHTML=html;
-
-  return;
-
- }
-
-
-
- /* =====================================================
-    minimum
-   
-    各期間ごとに、
-    「その期間だけで最低どれくらい必要か」
-    を計算。
- ===================================================== */
-
- if(mode==='minimum'){
-
-  let balance=currentCrystals();
-
-  let previousDate=todayStr();
-
-  let html='';
-
-  let maxRequired=0;
-
-
-  list.forEach((t,i)=>{
-
-   const ceiling=
-    Number(t.ceiling||0);
-
-   const d=
-    daysBetween(
-     previousDate,
-     t.date
-    );
-
-
-   const need=
-    Math.max(
-     0,
-     ceiling-balance
-    );
-
-
-   const rate=
-    d>0
-     ?Math.ceil(need/d)
-     :(need>0?Infinity:0);
-
-
-   if(
-    Number.isFinite(rate) &&
-    rate>maxRequired
-   ){
-
-    maxRequired=rate;
-
-   }
-
-
-   /*
-     最低量だけ獲得した場合。
-
-     余った分は次へ。
-   */
-
-   const earned=
-    Number.isFinite(rate)
-     ?rate*Math.max(0,d)
-     :0;
-
-
-   const beforeGet=
-    balance+earned;
-
-
-   const after=
-    Math.max(
-     0,
-     beforeGet-ceiling
-    );
-
+  result.rows.forEach(r=>{
 
    html+=`
 
 <div class="planMain">
 
-<b>
-🎯 ${esc(t.name||'名前未設定')}
-</b>
+<div style="
+font-size:18px;
+margin-bottom:12px;
+">
 
-<br><br>
+🎯 ${esc(r.t.name||'名前未設定')}
 
-実装日：
-<b>${esc(t.date)}</b>
+</div>
+
+
+<div class="summaryGrid">
+
+
+<div>
+<span>実装日</span>
+<b>${esc(r.t.date)}</b>
+</div>
+
+
+<div>
+<span>期間</span>
+<b>${fmt(r.days)}日</b>
+</div>
+
+
+<div>
+<span>天井</span>
+<b>${fmt(r.ceiling)}個</b>
+</div>
+
+
+<div>
+<span>前カード後</span>
+<b>${fmt(r.startBalance)}個</b>
+</div>
+
+
+<div>
+<span>期間中の獲得</span>
+<b>+${fmt(r.earned)}個</b>
+</div>
+
+
+<div>
+<span>取得直前</span>
+<b>${fmt(r.beforeGet)}個</b>
+</div>
+
+
+</div>
+
+
+<div style="
+margin-top:14px;
+padding:12px;
+background:#fff;
+border-radius:10px;
+line-height:1.8;
+">
+
+− ${fmt(r.ceiling)}個
+（天井消費）
 
 <br>
 
-このカードまでの日数：
-<b>
-${d<0?'実装済み':fmt(d)+'日'}
-</b>
+<strong>
+取得後の繰越：
+${fmt(r.after)}個
+</strong>
 
-<br><br>
+</div>
 
-前のカード取得後：
-<b>
-${fmt(balance)}個
-</b>
 
-<br>
-
-このカードに必要：
-<b>
-${fmt(need)}個
-</b>
-
-<br>
-
-この期間の最低獲得量：
-<b>
 ${
- Number.isFinite(rate)
-  ?fmt(rate)+'個/日'
-  :'間に合いません'
+r.after>0
+?`
+
+<div class="planGood">
+
+💰
+<strong>${fmt(r.after)}個</strong>
+を次のカードへ繰り越します。
+
+</div>
+
+`
+:''
 }
-</b>
 
-<br>
-
-カード取得直前：
-<b>
-${fmt(beforeGet)}個
-</b>
-
-<br>
-
-天井消費：
-<b>
--${fmt(ceiling)}個
-</b>
-
-<br>
-
-<span class="note">
-次のカードへ繰り越す：
-<b>
-${fmt(after)}個
-</b>
-</span>
 
 </div>
 
 `;
 
-
-   balance=after;
-
-   previousDate=t.date;
-
   });
-
-
-  html=`
-
-<div class="totalBox">
-
-<div>
-各カードの実装日を守るため、
-それぞれの期間で最低限必要な獲得量
-</div>
-
-<div class="big">
-
-${Number.isFinite(maxRequired)
- ?fmt(maxRequired)+' 個/日'
- :'計算できません'}
-
-</div>
-
-<div class="note" style="color:#fff">
-
-カードを取った後の残高は、
-次のカードへ繰り越しています。
-
-</div>
-
-</div>
-
-`
-  +html;
 
 
   box.innerHTML=html;
@@ -2706,7 +2666,7 @@ function drawChart(){
 function update(){
 
  $('planMode').value=
-  data.planMode||'zero';
+  data.planMode||'minimum';
 
  $('maxDaily').value=
   data.maxDaily||'';
@@ -2886,7 +2846,7 @@ $('resetAll').onclick=async()=>{
    }
   ],
   records:[],
-  planMode:'zero',
+  planMode:'minimum',
   maxDaily:0
  };
 
