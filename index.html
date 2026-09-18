@@ -372,4 +372,168 @@ function renderAllTargetPlan(cur){
     const bottleneck=globalRows.slice().sort((a,b)=>b.rawRequired-a.rawRequired)[0];
 
     html+='<div class="planMain">全カードを取るための「1日あたり最大必要量」の最小値<br><b>'+fmt(optimal)+'個/日</b>'
-      +(maxDaily>0?' <span class="note">（設定上限：'+fmt(maxDaily)+'個/
+      +(maxDaily>0?' <span class="note">（設定上限：'+fmt(maxDaily)+'個/日）</span>':'')
+      +(bottleneck?' <span class="note">（最も厳しい締切：'+esc(bottleneck.t.name||'名前未設定')+'）</span>':'')
+      +'</div>';
+
+    html+='<div class="note" style="margin-bottom:10px">重要：このモードではカードごとに計算をやり直しません。カード①を取った後に残ったクリスタルを、カード②・③…のためにそのまま持ち越して計算します。</div>';
+
+    html+='<table class="planTable"><thead><tr>'
+      +'<th>カード</th><th>実装日</th><th class="planNum">期間</th><th class="planNum">この期間の獲得</th><th class="planNum">取得前</th><th class="planNum">取得後の残り</th>'
+      +'</tr></thead><tbody>';
+    planRows.forEach(r=>{
+      html+='<tr>'
+        +'<td data-label="カード">'+esc(r.t.name||'名前未設定')+'</td>'
+        +'<td data-label="実装日">'+r.t.date+'</td>'
+        +'<td data-label="期間" class="planNum">'+fmt(r.days)+'日</td>'
+        +'<td data-label="この期間の獲得" class="planNum">+'+fmt(r.earned)+'個</td>'
+        +'<td data-label="取得前" class="planNum">'+fmt(r.before)+'個</td>'
+        +'<td data-label="取得後の残り" class="planNum"><b>'+fmt(r.after)+'個</b></td>'
+        +'</tr>';
+    });
+    html+='</tbody></table>';
+
+    if(maxDaily>0 && optimal<=maxDaily){
+      html+='<div class="planGood">🎯 1日最大'+fmt(maxDaily)+'個までなら、この計画は実行可能です。</div>';
+    }
+  }else{
+    let balance=initial, prevDate=today, maxRequired=0, bottleneck=null, impossible=false, cumulative=0;
+    const rows=[];
+    list.forEach(t=>{
+      const date=new Date(t.date+"T00:00:00");
+      const days=Math.max(0,Math.ceil((date-prevDate)/86400000));
+      const ceil=Math.max(0,Number(t.ceiling||0));
+      cumulative+=ceil;
+      const shortage=Math.max(0,ceil-balance);
+      const rawRequired=days>0?shortage/days:(shortage>0?Infinity:0);
+      if(rawRequired>maxRequired){maxRequired=rawRequired;bottleneck=t;}
+      const rate=Math.ceil(rawRequired);
+      const possible=Number.isFinite(rawRequired) && (maxDaily<=0 || rate<=maxDaily);
+      if(!possible) impossible=true;
+      balance=0;
+      rows.push({t,days,ceil,cumulative,rawRequired,plannedRate:rate,balance,possible});
+      prevDate=date;
+    });
+    const requiredCeil=Math.ceil(maxRequired);
+    let zeroVerifyOk=true;
+    let checkBalance=initial;
+    for(const r of rows){
+      const gain=requiredCeil*r.days;
+      if(checkBalance+gain+1e-9 < r.ceil){ zeroVerifyOk=false; break; }
+      checkBalance=0;
+    }
+    if(requiredCeil>0){
+      const lower=requiredCeil-1;
+      let lowerFails=false, lb=initial;
+      for(const r of rows){
+        if(lb+lower*r.days+1e-9 < r.ceil){ lowerFails=true; break; }
+        lb=0;
+      }
+      if(!lowerFails) zeroVerifyOk=false;
+    }
+    const verification={ok:zeroVerifyOk};
+    impossible=impossible || !verification.ok;
+    if(maxDaily<=0){
+      html+='<div class="note" style="margin-bottom:10px">最高獲得量を入力すると、その上限を超えない範囲で「間に合うか」を判定します。</div>';
+    }else if(impossible){
+      html+='<div class="planAlert">⚠️ 最高でも <b>'+fmt(maxDaily)+'個/日</b> なので、現在の条件では全カードに間に合わない区間があります。</div>';
+    }else{
+      html+='<div class="planGood">✅ 検算OK：必要獲得量を確認し、最高 <b>'+fmt(maxDaily)+'個/日</b> の範囲で全カードに間に合います。</div>';
+    }
+    html+='<div class="planMain">全カードを間に合わせるための必要獲得量/日<br><b>'+fmt(requiredCeil)+'個/日</b>'+(maxDaily>0?' <span class="note">（上限：'+fmt(maxDaily)+'個/日）</span>':'')+(bottleneck?' <span class="note">（最も厳しい区間：'+esc(bottleneck.name||'名前未設定')+'）</span>':'')+'</div>';
+    html+='<div class="note" style="margin-bottom:10px">検算：各カードを取得する直前までに天井分を確保できるかを再計算しています。取得後は0個になります。</div>';
+    html+='<table class="planTable"><thead><tr><th>カード</th><th>実装日</th><th class="planNum">ここまでの累計使用</th><th class="planNum">必要/日</th><th class="planNum">取得後の残り</th></tr></thead><tbody>';
+    rows.forEach(r=>{
+      const rate=r.rawRequired;
+      const rateText=r.possible?(rate===Infinity?'間に合わない':fmt(Math.ceil(rate))+'個/日'):'<span style="color:#b33;font-weight:700">'+(rate===Infinity?'間に合わない':fmt(Math.ceil(rate))+'個/日')+'</span>';
+      html+='<tr><td data-label="カード">'+esc(r.t.name||'名前未設定')+'</td><td data-label="実装日">'+r.t.date+'</td><td data-label="ここまでの累計使用" class="planNum">'+fmt(r.cumulative)+'個</td><td data-label="必要/日" class="planNum">'+rateText+(maxDaily>0&&rate>maxDaily?' <span style="color:#b33">(上限超過)</span>':'')+'</td><td data-label="取得後の残り" class="planNum">0個</td></tr>';
+    });
+    html+='</tbody></table>';
+  }
+  box.innerHTML=html;
+}
+function update(){
+  const maxDailyEl=$("maxDaily");
+  if(maxDailyEl) maxDailyEl.value=settings.maxDaily?settings.maxDaily:"";
+  const planModeEl=$("planMode");
+  if(planModeEl) planModeEl.value=settings.planMode||"zero";
+  const sortedRecords=records.slice().filter(r=>r && r.date && Number.isFinite(Number(r.crystals))).sort((a,b)=>a.date.localeCompare(b.date));
+  const cur=sortedRecords.length?Number(sortedRecords[sortedRecords.length-1].crystals):Number(settings.current||0);
+  let daily=null;
+  if(sortedRecords.length>=2){
+    const first=sortedRecords[0],last=sortedRecords[sortedRecords.length-1];
+    const span=(new Date(last.date)-new Date(first.date))/86400000;
+    if(Number.isFinite(span) && span>0) daily=(Number(last.crystals)-Number(first.crystals))/span;
+  }
+  const summary=$("targetSummary");summary.innerHTML="";
+  targets.forEach((t,i)=>{
+    const d=daysUntil(t.date),remain=Math.max(0,Number(t.ceiling||0)-cur),needed=d!==null&&d>0?remain/d:null;
+    const rate=t.ceiling?Math.min(100,cur/t.ceiling*100):0;
+    const card=document.createElement("div");card.className="summaryBox";
+    card.innerHTML=`<div class="summaryTitle">🎯 ${esc(t.name||"名前未設定")}</div>
+      <div class="summaryGrid"><div><span>実装日</span><b>${t.date||"未設定"}</b></div><div><span>実装まで</span><b>${d===null?"--":d<0?"実装済み":d+"日"}</b></div>
+      <div><span>天井まで必要</span><b>${fmt(remain)}個</b></div><div><span>必要獲得量/日</span><b>${needed===null?"--":fmt(Math.ceil(Math.max(0,needed)))+"個/日"}</b></div>
+      <div><span>現在の達成率</span><b>${rate.toFixed(1)}%</b></div><div><span>現在の獲得ペース</span><b>${daily===null?"--":(daily>=0?"+":"")+fmt(Math.round(daily))+"個/日"}</b></div></div>
+      <div class="progress"><div class="bar" style="width:${rate}%"></div></div>`;
+    summary.appendChild(card);
+  });
+  renderAllTargetPlan(cur);
+  renderTable();drawChart(Math.max(0,...targets.map(t=>Number(t.ceiling||0))));
+}
+$("maxDaily").addEventListener("input",e=>{settings.maxDaily=Math.max(0,Number(e.target.value||0));save();update()});
+$("planMode").addEventListener("change",e=>{settings.planMode=e.target.value;save();update()});
+$("addTarget").onclick=()=>{targets.push({id:Date.now()+Math.random(),name:"",date:"",ceiling:90000});save();renderTargets();update()};
+
+function renderTable(){
+  const tb=$("records");tb.innerHTML="";
+  records.slice().reverse().forEach((r,j)=>{
+    const i=records.length-1-j,prev=i?records[i-1].crystals:null;
+    const tr=document.createElement("tr");
+    tr.innerHTML="<td>"+r.date+"</td><td>"+fmt(r.crystals)+"</td><td>"+(prev===null?"—":(r.crystals-prev>=0?"+":"")+fmt(r.crystals-prev))+"</td><td><div class='actions' style='margin:0;gap:6px'><button class='btn' style='padding:5px 8px' onclick='editRecord("+i+")'>編集</button><button class='btn' style='padding:5px 8px;background:#ffe8eb;color:#b33' onclick='del("+i+")'>削除</button></div></td>";
+    tb.appendChild(tr);
+  });
+}
+window.editRecord=i=>{const r=records[i]; if(!r)return; $("recordDate").value=r.date; $("current").value=r.crystals; editingIndex=i; $("record").textContent="この記録を更新"; $("cancelEdit").style.display="inline-flex"; $("recordDate").focus();};
+let editingIndex=null;
+window.del=i=>{records.splice(i,1);if(editingIndex===i){editingIndex=null;$("record").textContent="この日付の記録を保存";$("cancelEdit").style.display="none";}else if(editingIndex!==null && i<editingIndex) editingIndex--;save();update()};
+function drawChart(ceil){
+  const c=$("chart"),ctx=c.getContext("2d"),W=c.width,H=c.height,p={l:48,r:12,t:15,b:32};
+  ctx.clearRect(0,0,W,H);let max=Math.max(ceil||0,...records.map(r=>r.crystals),1);
+  ctx.strokeStyle="#e6e6ee";ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){let y=p.t+(H-p.t-p.b)*i/4;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();ctx.fillStyle="#777";ctx.font="11px sans-serif";ctx.fillText(fmt(Math.round(max*(4-i)/4)),4,y+4)}
+  if(!records.length){ctx.fillStyle="#999";ctx.font="14px sans-serif";ctx.fillText("今日の所持数を記録するとグラフが始まります",W/2-170,H/2);return}
+  const x=i=>records.length===1?(W+p.l-p.r)/2:p.l+(W-p.l-p.r)*i/(records.length-1),y=v=>H-p.b-(H-p.t-p.b)*v/max;
+  if(ceil){ctx.setLineDash([6,5]);ctx.strokeStyle="#aaa";ctx.beginPath();ctx.moveTo(p.l,y(ceil));ctx.lineTo(W-p.r,y(ceil));ctx.stroke();ctx.setLineDash([])}
+  ctx.strokeStyle="#6c63ff";ctx.lineWidth=3;ctx.beginPath();records.forEach((r,i)=>i?ctx.lineTo(x(i),y(r.crystals)):ctx.moveTo(x(i),y(r.crystals)));ctx.stroke();
+  records.forEach((r,i)=>{ctx.fillStyle="#6c63ff";ctx.beginPath();ctx.arc(x(i),y(r.crystals),4,0,Math.PI*2);ctx.fill()});
+}
+$("record").onclick=()=>{
+  const date=$("recordDate").value;
+  const crystals=Number($("current").value);
+  if(!date){alert("記録する日付を入力してください。");return}
+  if(!Number.isFinite(crystals)||crystals<0){alert("クリスタル数を正しく入力してください。");return}
+  const same=records.findIndex(r=>r.date===date);
+  if(editingIndex!==null){
+    if(same>=0 && same!==editingIndex){alert("その日付の記録はすでにあります。別の日付を選ぶか、既存の記録を編集してください。");return}
+    records[editingIndex]={date,crystals};
+  }else if(same>=0){records[same].crystals=crystals;}else{records.push({date,crystals});}
+  records.sort((a,b)=>a.date.localeCompare(b.date));
+  settings.current=records.length?records[records.length-1].crystals:0;
+  editingIndex=null; $("record").textContent="この日付の記録を保存"; $("cancelEdit").style.display="none";
+  save();update();
+};
+$("cancelEdit").onclick=()=>{editingIndex=null;$("record").textContent="この日付の記録を保存";$("cancelEdit").style.display="none";$("recordDate").value=new Date().toISOString().slice(0,10);$("current").value=records.length?records[records.length-1].crystals:(settings.current??0)};
+$("clear").onclick=()=>{if(confirm("記録を全部削除しますか？")){records=[];save();update()}};
+$("csvOut").onclick=()=>{const text="date,crystals\n"+records.map(r=>r.date+","+r.crystals).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/csv"}));a.download="proseka_gachakin.csv";a.click()};
+$("csvInBtn").onclick=()=>$("csvIn").click();
+$("csvIn").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{rd.result.split(/\r?\n/).slice(1).forEach(l=>{let [d,n]=l.split(",");if(d&&n&&!isNaN(Number(n)))records.push({date:d,crystals:Number(n)})});let m={};records.forEach(r=>m[r.date]=r);records=Object.values(m).sort((a,b)=>a.date.localeCompare(b.date));save();update()};rd.readAsText(f);e.target.value=""};
+
+$("recordDate").value=new Date().toISOString().slice(0,10);
+$("current").value=records.length?records[records.length-1].crystals:(settings.current??0);
+renderTargets();update();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
